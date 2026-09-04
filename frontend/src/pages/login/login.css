@@ -1,0 +1,2474 @@
+/* ============================================================
+   JARVIS
+   COSMIC GAS GIANT LOGIN
+   ============================================================ */
+
+
+/* ============================================================
+   ROOT RESET
+
+   THIS REMOVES THE WHITE BORDER / WHITE PAGE EDGE.
+   ============================================================ */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  background: #010207;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+button,
+input {
+  font: inherit;
+}
+
+
+/* ============================================================
+   FONT STACK
+
+   If the actual font files are later added to /public/fonts,
+   we can wire them in with @font-face.
+   ============================================================ */
+
+.login-page {
+  --cyan: #00eaff;
+  --electric-blue: #287cff;
+  --violet: #7047ff;
+  --purple: #a83cff;
+  --magenta: #ff29a8;
+  --pink: #ff3c8d;
+  --green: #00ffb3;
+  --yellow: #ffe86b;
+
+  --universe-direction: 1;
+  --universe-angle: 0deg;
+  --universe-speed: 30s;
+
+  position: relative;
+
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  isolation: isolate;
+
+  color: #f5f7ff;
+
+  font-family:
+    "Halyard Display",
+    "Halyard",
+    "Allotrope Variable",
+    "LoRe 12OT",
+    system-ui,
+    sans-serif;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 45%,
+      #101936 0%,
+      #080d20 30%,
+      #030611 63%,
+      #010207 100%
+    );
+}
+
+
+/* ============================================================
+   DEEP SPACE COLOR MOVEMENT
+   ============================================================ */
+
+.cosmos-background {
+  position: absolute;
+
+  inset: -70%;
+
+  z-index: -20;
+
+  background:
+    conic-gradient(
+      from var(--universe-angle),
+
+      rgba(0, 238, 255, 0.12),
+      transparent 7%,
+
+      rgba(40, 90, 255, 0.14),
+      transparent 17%,
+
+      rgba(119, 45, 255, 0.14),
+      transparent 28%,
+
+      rgba(255, 35, 168, 0.11),
+      transparent 40%,
+
+      rgba(255, 92, 25, 0.06),
+      transparent 52%,
+
+      rgba(0, 255, 178, 0.09),
+      transparent 65%,
+
+      rgba(0, 160, 255, 0.12),
+      transparent 78%,
+
+      rgba(137, 50, 255, 0.1),
+      transparent
+    );
+
+  filter: blur(100px);
+
+  animation:
+    universeFlow
+    var(--universe-speed)
+    linear
+    infinite;
+}
+
+
+@keyframes universeFlow {
+
+  from {
+    transform:
+      rotate(0deg)
+      scale(1);
+  }
+
+  to {
+    transform:
+      rotate(
+        calc(
+          360deg *
+          var(--universe-direction)
+        )
+      )
+      scale(1.08);
+  }
+}
+
+
+/* ============================================================
+   NEBULA
+   ============================================================ */
+
+.nebula {
+  position: absolute;
+
+  pointer-events: none;
+
+  border-radius: 50%;
+
+  filter: blur(85px);
+
+  mix-blend-mode: screen;
+}
+
+
+.nebula-one {
+  width: 580px;
+  height: 260px;
+
+  left: -200px;
+  top: 4%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0, 191, 255, 0.13),
+      rgba(64, 69, 255, 0.08),
+      transparent 70%
+    );
+
+  transform: rotate(-25deg);
+
+  animation:
+    nebulaOne
+    25s
+    ease-in-out
+    infinite;
+}
+
+
+.nebula-two {
+  width: 650px;
+  height: 300px;
+
+  right: -220px;
+  bottom: -20px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(217, 28, 255, 0.12),
+      rgba(255, 25, 142, 0.06),
+      transparent 72%
+    );
+
+  transform: rotate(22deg);
+
+  animation:
+    nebulaTwo
+    30s
+    ease-in-out
+    infinite;
+}
+
+
+.nebula-three {
+  width: 500px;
+  height: 220px;
+
+  left: 35%;
+  top: 5%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0, 255, 190, 0.055),
+      rgba(0, 137, 255, 0.04),
+      transparent 70%
+    );
+
+  animation:
+    nebulaThree
+    21s
+    ease-in-out
+    infinite alternate;
+}
+
+
+@keyframes nebulaOne {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      rotate(-25deg)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(55px, 35px)
+      rotate(-13deg)
+      scale(1.1);
+  }
+}
+
+
+@keyframes nebulaTwo {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      rotate(22deg)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-45px, -35px)
+      rotate(11deg)
+      scale(1.12);
+  }
+}
+
+
+@keyframes nebulaThree {
+
+  from {
+    transform:
+      translateX(-20px)
+      scale(0.9);
+  }
+
+  to {
+    transform:
+      translateX(40px)
+      scale(1.15);
+  }
+}
+
+
+/* ============================================================
+   STARS
+   ============================================================ */
+
+.star-field {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+}
+
+
+.star-field-one {
+  opacity: 0.6;
+
+  background-image:
+
+    radial-gradient(
+      circle at 8% 17%,
+      rgba(255,255,255,0.75) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 22% 72%,
+      rgba(255,255,255,0.5) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 80% 19%,
+      rgba(255,255,255,0.7) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 91% 67%,
+      rgba(255,255,255,0.55) 0 1px,
+      transparent 1.7px
+    );
+}
+
+
+.star-field-two {
+  opacity: 0.5;
+
+  background-image:
+
+    radial-gradient(
+      circle at 14% 86%,
+      rgba(0,229,255,0.8) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 93% 12%,
+      rgba(132,74,255,0.9) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 67% 9%,
+      rgba(255,255,255,0.6) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 37% 28%,
+      rgba(255,255,255,0.45) 0 1px,
+      transparent 1.7px
+    );
+}
+
+
+.star-field-three {
+  opacity: 0.35;
+
+  background-image:
+
+    radial-gradient(
+      circle at 4% 45%,
+      rgba(0,255,180,0.75) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 72% 78%,
+      rgba(0,180,255,0.7) 0 1px,
+      transparent 1.7px
+    ),
+
+    radial-gradient(
+      circle at 58% 17%,
+      rgba(255,80,200,0.6) 0 1px,
+      transparent 1.7px
+    );
+}
+
+
+/* ============================================================
+   LOGIN CARD
+
+   Notice:
+   - subtle corners
+   - no giant rounded glass card
+   - no white border
+   ============================================================ */
+
+.login-card {
+  position: relative;
+
+  z-index: 30;
+
+  width: min(
+    500px,
+    calc(100% - 34px)
+  );
+
+  padding:
+    34px 38px 27px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(115, 143, 220, 0.11);
+
+  border-radius: 5px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 13, 28, 0.78),
+      rgba(3, 7, 18, 0.86)
+    );
+
+  backdrop-filter:
+    blur(25px);
+
+  box-shadow:
+
+    0 35px 100px
+    rgba(0,0,0,0.62),
+
+    inset 0 1px
+    rgba(255,255,255,0.025);
+}
+
+
+/* ============================================================
+   CARD LIGHT
+   ============================================================ */
+
+.card-cosmic-light {
+  position: absolute;
+
+  width: 500px;
+  height: 250px;
+
+  left: 50%;
+  top: -180px;
+
+  transform:
+    translateX(-50%);
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(39, 100, 255, 0.1),
+      rgba(138, 43, 255, 0.05),
+      transparent 72%
+    );
+
+  filter: blur(50px);
+
+  animation:
+    cardLight
+    12s
+    ease-in-out
+    infinite alternate;
+}
+
+
+@keyframes cardLight {
+
+  from {
+    transform:
+      translateX(-50%)
+      translateY(-15px)
+      scale(0.85);
+  }
+
+  to {
+    transform:
+      translateX(-50%)
+      translateY(25px)
+      scale(1.12);
+  }
+}
+
+
+/* ============================================================
+   GAS GIANT AREA
+   ============================================================ */
+
+.gas-giant-container {
+  position: relative;
+
+  width: 240px;
+  height: 205px;
+
+  margin:
+    0 auto 2px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  isolation: isolate;
+}
+
+
+/* ============================================================
+   ATMOSPHERE
+
+   These are not rings.
+   They are huge transparent layers surrounding the planet.
+   ============================================================ */
+
+.planet-atmosphere {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  mix-blend-mode: screen;
+}
+
+
+.atmosphere-one {
+  width: 155px;
+  height: 125px;
+
+  background:
+    radial-gradient(
+      ellipse,
+
+      rgba(0,229,255,0.2) 0%,
+
+      rgba(37,111,255,0.12) 28%,
+
+      rgba(130,44,255,0.1) 45%,
+
+      transparent 70%
+    );
+
+  filter: blur(17px);
+
+  animation:
+    atmosphereFloatOne
+    7s
+    ease-in-out
+    infinite;
+}
+
+
+.atmosphere-two {
+  width: 185px;
+  height: 140px;
+
+  background:
+    radial-gradient(
+      ellipse,
+
+      rgba(255,20,173,0.1),
+
+      rgba(102,40,255,0.1),
+
+      transparent 68%
+    );
+
+  filter: blur(25px);
+
+  animation:
+    atmosphereFloatTwo
+    11s
+    ease-in-out
+    infinite reverse;
+}
+
+
+.atmosphere-three {
+  width: 210px;
+  height: 150px;
+
+  background:
+    radial-gradient(
+      ellipse,
+
+      rgba(0,255,178,0.055),
+
+      rgba(0,130,255,0.06),
+
+      transparent 70%
+    );
+
+  filter: blur(32px);
+
+  animation:
+    atmosphereFloatThree
+    16s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes atmosphereFloatOne {
+
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.82)
+      rotate(-10deg);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.12)
+      rotate(19deg);
+  }
+}
+
+
+@keyframes atmosphereFloatTwo {
+
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.9)
+      rotate(18deg);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.18)
+      rotate(-25deg);
+  }
+}
+
+
+@keyframes atmosphereFloatThree {
+
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.85)
+      rotate(0deg);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.14)
+      rotate(35deg);
+  }
+}
+
+
+/* ============================================================
+   THE GAS GIANT
+
+   This is deliberately asymmetric.
+   ============================================================ */
+
+.gas-giant {
+  position: relative;
+
+  width: 105px;
+  height: 99px;
+
+  z-index: 15;
+
+  overflow: hidden;
+
+  border-radius:
+    53% 47% 57% 43%
+    /
+    47% 56% 44% 53%;
+
+  background:
+    radial-gradient(
+      ellipse at 33% 25%,
+
+      rgba(239,253,255,0.96) 0%,
+
+      rgba(77,224,255,0.96) 7%,
+
+      rgba(0,176,255,0.92) 18%,
+
+      rgba(74,70,255,0.9) 34%,
+
+      rgba(136,45,255,0.87) 48%,
+
+      rgba(238,29,170,0.75) 63%,
+
+      rgba(48,20,119,0.76) 79%,
+
+      rgba(4,8,32,0.88) 100%
+    );
+
+  box-shadow:
+
+    0 0 15px
+    rgba(0,214,255,0.42),
+
+    0 0 38px
+    rgba(94,64,255,0.22),
+
+    0 0 65px
+    rgba(255,20,174,0.09);
+
+  transform-origin:
+    50% 50%;
+
+  animation:
+    planetDeformation
+    7.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* ============================================================
+   GAS LAYERS
+
+   These move independently.
+   ============================================================ */
+
+.gas-layer {
+  position: absolute;
+
+  pointer-events: none;
+
+  mix-blend-mode: screen;
+
+  filter: blur(4px);
+}
+
+
+/* cyan upper gas */
+
+.layer-one {
+  width: 140px;
+  height: 42px;
+
+  left: -18px;
+  top: 6px;
+
+  border-radius:
+    70% 30% 65% 35%;
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent,
+      rgba(0,239,255,0.8),
+      rgba(72,136,255,0.7),
+      transparent
+    );
+
+  transform:
+    rotate(-18deg);
+
+  animation:
+    gasFlowOne
+    5.5s
+    ease-in-out
+    infinite;
+}
+
+
+/* violet atmospheric belt */
+
+.layer-two {
+  width: 150px;
+  height: 33px;
+
+  left: -25px;
+  top: 35px;
+
+  border-radius:
+    40% 60% 45% 55%;
+
+  background:
+    linear-gradient(
+      100deg,
+      transparent,
+      rgba(92,55,255,0.9),
+      rgba(205,40,255,0.78),
+      transparent
+    );
+
+  transform:
+    rotate(27deg);
+
+  animation:
+    gasFlowTwo
+    8s
+    ease-in-out
+    infinite reverse;
+}
+
+
+/* magenta turbulence */
+
+.layer-three {
+  width: 125px;
+  height: 38px;
+
+  left: -12px;
+  top: 53px;
+
+  border-radius:
+    60% 40% 35% 65%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,30,178,0.78),
+      rgba(255,81,121,0.5),
+      transparent
+    );
+
+  transform:
+    rotate(-21deg);
+
+  animation:
+    gasFlowThree
+    6.8s
+    ease-in-out
+    infinite;
+}
+
+
+/* electric blue lower gas */
+
+.layer-four {
+  width: 135px;
+  height: 27px;
+
+  left: -17px;
+  top: 70px;
+
+  border-radius:
+    50% 50% 30% 70%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,175,255,0.8),
+      rgba(90,64,255,0.75),
+      transparent
+    );
+
+  transform:
+    rotate(34deg);
+
+  animation:
+    gasFlowFour
+    9s
+    ease-in-out
+    infinite reverse;
+}
+
+
+/* green/cyan turbulence */
+
+.layer-five {
+  width: 90px;
+  height: 55px;
+
+  left: 38px;
+  top: 12px;
+
+  border-radius:
+    65% 35% 60% 40%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0,255,191,0.38),
+      transparent 68%
+    );
+
+  filter: blur(8px);
+
+  animation:
+    gasFlowFive
+    7s
+    ease-in-out
+    infinite;
+}
+
+
+/* warm gas */
+
+.layer-six {
+  width: 90px;
+  height: 28px;
+
+  left: -8px;
+  top: 21px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,220,90,0.48),
+      rgba(255,105,30,0.38),
+      transparent
+    );
+
+  filter: blur(7px);
+
+  animation:
+    gasFlowSix
+    10s
+    ease-in-out
+    infinite reverse;
+}
+
+
+/* ============================================================
+   INTERNAL STORMS
+   ============================================================ */
+
+.gas-storm {
+  position: absolute;
+
+  pointer-events: none;
+
+  border-radius: 50%;
+
+  mix-blend-mode: screen;
+
+  filter: blur(6px);
+}
+
+
+.storm-one {
+  width: 55px;
+  height: 36px;
+
+  left: 9px;
+  top: 31px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(255,255,255,0.3),
+      rgba(0,220,255,0.25),
+      transparent 70%
+    );
+
+  animation:
+    stormOne
+    4.8s
+    ease-in-out
+    infinite;
+}
+
+
+.storm-two {
+  width: 68px;
+  height: 26px;
+
+  left: 32px;
+  top: 48px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(255,0,177,0.36),
+      rgba(112,49,255,0.22),
+      transparent 70%
+    );
+
+  animation:
+    stormTwo
+    6.3s
+    ease-in-out
+    infinite reverse;
+}
+
+
+.storm-three {
+  width: 44px;
+  height: 42px;
+
+  left: 44px;
+  top: 12px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0,255,181,0.28),
+      rgba(0,149,255,0.18),
+      transparent 70%
+    );
+
+  animation:
+    stormThree
+    8.4s
+    ease-in-out
+    infinite;
+}
+
+
+/* ============================================================
+   GAS HIGHLIGHT
+   ============================================================ */
+
+.gas-highlight {
+  position: absolute;
+
+  width: 34px;
+  height: 25px;
+
+  left: 20px;
+  top: 14px;
+
+  z-index: 30;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(255,255,255,0.82),
+      rgba(183,245,255,0.32),
+      transparent 72%
+    );
+
+  filter: blur(4px);
+
+  animation:
+    highlightDrift
+    5s
+    ease-in-out
+    infinite;
+}
+
+
+/* ============================================================
+   GRAVITY CORE
+   ============================================================ */
+
+.gas-core {
+  position: absolute;
+
+  width: 45px;
+  height: 45px;
+
+  left: 30px;
+  top: 28px;
+
+  z-index: 25;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+
+      rgba(255,255,255,0.72) 0%,
+
+      rgba(85,214,255,0.45) 18%,
+
+      rgba(76,59,255,0.3) 42%,
+
+      rgba(11,12,55,0.2) 65%,
+
+      transparent 78%
+    );
+
+  filter: blur(6px);
+
+  animation:
+    gravityCore
+    4.2s
+    ease-in-out
+    infinite;
+}
+
+
+/* ============================================================
+   PLANET DEFORMATION
+
+   NOT A NORMAL ROTATION.
+   The entire silhouette changes shape.
+   ============================================================ */
+
+@keyframes planetDeformation {
+
+  0% {
+
+    border-radius:
+      53% 47% 57% 43%
+      /
+      47% 56% 44% 53%;
+
+    transform:
+      translate(0, 0)
+      rotate(-4deg)
+      scale(0.94, 1);
+  }
+
+  17% {
+
+    border-radius:
+      62% 38% 46% 54%
+      /
+      55% 43% 57% 45%;
+
+    transform:
+      translate(3px, -2px)
+      rotate(11deg)
+      scale(1.04, 0.93);
+  }
+
+  35% {
+
+    border-radius:
+      42% 58% 63% 37%
+      /
+      44% 62% 38% 56%;
+
+    transform:
+      translate(-3px, 2px)
+      rotate(-17deg)
+      scale(0.92, 1.05);
+  }
+
+  52% {
+
+    border-radius:
+      57% 43% 38% 62%
+      /
+      63% 39% 61% 42%;
+
+    transform:
+      translate(2px, 1px)
+      rotate(23deg)
+      scale(1.05, 0.95);
+  }
+
+  70% {
+
+    border-radius:
+      38% 62% 54% 46%
+      /
+      48% 60% 40% 52%;
+
+    transform:
+      translate(-2px, -1px)
+      rotate(-9deg)
+      scale(0.95, 1.04);
+  }
+
+  86% {
+
+    border-radius:
+      64% 36% 45% 55%
+      /
+      42% 57% 43% 58%;
+
+    transform:
+      translate(3px, 2px)
+      rotate(14deg)
+      scale(1.02, 0.94);
+  }
+
+  100% {
+
+    border-radius:
+      53% 47% 57% 43%
+      /
+      47% 56% 44% 53%;
+
+    transform:
+      translate(0, 0)
+      rotate(-4deg)
+      scale(0.94, 1);
+  }
+}
+
+
+/* ============================================================
+   GAS FLOW ANIMATIONS
+   ============================================================ */
+
+@keyframes gasFlowOne {
+
+  0% {
+    transform:
+      translate(-8px, 4px)
+      rotate(-18deg)
+      scale(0.8, 0.7);
+  }
+
+  30% {
+    transform:
+      translate(17px, -7px)
+      rotate(8deg)
+      scale(1.12, 0.82);
+  }
+
+  60% {
+    transform:
+      translate(-11px, 9px)
+      rotate(51deg)
+      scale(0.72, 1.08);
+  }
+
+  100% {
+    transform:
+      translate(-8px, 4px)
+      rotate(342deg)
+      scale(0.8, 0.7);
+  }
+}
+
+
+@keyframes gasFlowTwo {
+
+  0% {
+    transform:
+      translate(8px, -4px)
+      rotate(27deg)
+      scale(0.75);
+  }
+
+  25% {
+    transform:
+      translate(-15px, 7px)
+      rotate(-15deg)
+      scale(1.12, 0.82);
+  }
+
+  55% {
+    transform:
+      translate(13px, 4px)
+      rotate(48deg)
+      scale(0.85, 1.15);
+  }
+
+  100% {
+    transform:
+      translate(8px, -4px)
+      rotate(-333deg)
+      scale(0.75);
+  }
+}
+
+
+@keyframes gasFlowThree {
+
+  0% {
+    transform:
+      translate(-5px, 5px)
+      rotate(-21deg)
+      scale(0.8);
+  }
+
+  50% {
+    transform:
+      translate(13px, -8px)
+      rotate(32deg)
+      scale(1.2, 0.8);
+  }
+
+  100% {
+    transform:
+      translate(-5px, 5px)
+      rotate(-26deg)
+      scale(0.8);
+  }
+}
+
+
+@keyframes gasFlowFour {
+
+  0% {
+    transform:
+      translate(10px, -3px)
+      rotate(34deg)
+      scale(0.75);
+  }
+
+  50% {
+    transform:
+      translate(-14px, 6px)
+      rotate(-30deg)
+      scale(1.15);
+  }
+
+  100% {
+    transform:
+      translate(10px, -3px)
+      rotate(34deg)
+      scale(0.75);
+  }
+}
+
+
+@keyframes gasFlowFive {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      scale(0.7)
+      rotate(0deg);
+  }
+
+  50% {
+    transform:
+      translate(-17px, 12px)
+      scale(1.3)
+      rotate(60deg);
+  }
+}
+
+
+@keyframes gasFlowSix {
+
+  0% {
+    transform:
+      translate(-10px, 0)
+      rotate(-15deg)
+      scale(0.7);
+  }
+
+  50% {
+    transform:
+      translate(18px, 8px)
+      rotate(28deg)
+      scale(1.2);
+  }
+
+  100% {
+    transform:
+      translate(-10px, 0)
+      rotate(-15deg)
+      scale(0.7);
+  }
+}
+
+
+/* ============================================================
+   INTERNAL STORMS
+   ============================================================ */
+
+@keyframes stormOne {
+
+  0%,
+  100% {
+    transform:
+      translate(-5px, 3px)
+      rotate(0deg)
+      scale(0.7);
+  }
+
+  40% {
+    transform:
+      translate(12px, -6px)
+      rotate(90deg)
+      scale(1.2);
+  }
+
+  70% {
+    transform:
+      translate(-8px, 8px)
+      rotate(210deg)
+      scale(0.85);
+  }
+}
+
+
+@keyframes stormTwo {
+
+  0% {
+    transform:
+      translate(8px, 0)
+      rotate(0deg)
+      scale(0.8);
+  }
+
+  50% {
+    transform:
+      translate(-13px, -7px)
+      rotate(180deg)
+      scale(1.25);
+  }
+
+  100% {
+    transform:
+      translate(8px, 0)
+      rotate(360deg)
+      scale(0.8);
+  }
+}
+
+
+@keyframes stormThree {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      scale(0.7)
+      rotate(-20deg);
+  }
+
+  50% {
+    transform:
+      translate(-12px, 10px)
+      scale(1.2)
+      rotate(80deg);
+  }
+}
+
+
+/* ============================================================
+   CORE
+   ============================================================ */
+
+@keyframes gravityCore {
+
+  0%,
+  100% {
+    transform:
+      scale(0.72)
+      translate(0, 0);
+
+    opacity: 0.5;
+  }
+
+  25% {
+    transform:
+      scale(1.08)
+      translate(2px, -2px);
+
+    opacity: 0.9;
+  }
+
+  55% {
+    transform:
+      scale(0.82)
+      translate(-2px, 2px);
+
+    opacity: 0.65;
+  }
+
+  80% {
+    transform:
+      scale(1.16)
+      translate(1px, 1px);
+
+    opacity: 1;
+  }
+}
+
+
+@keyframes highlightDrift {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      scale(0.75);
+  }
+
+  45% {
+    transform:
+      translate(8px, -4px)
+      scale(1.15);
+  }
+
+  75% {
+    transform:
+      translate(-3px, 5px)
+      scale(0.9);
+  }
+}
+
+
+/* ============================================================
+   DUST STREAMS
+
+   These represent matter being pulled toward gravity.
+   ============================================================ */
+
+.dust-stream {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 180px;
+  height: 180px;
+
+  margin:
+    -90px 0 0 -90px;
+
+  pointer-events: none;
+
+  border-radius: 50%;
+
+  mix-blend-mode: screen;
+}
+
+
+.dust-stream span {
+  position: absolute;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(160,225,255,0.75);
+
+  box-shadow:
+    0 0 7px
+    rgba(0,220,255,0.7);
+
+  animation:
+    dustFall
+    5s
+    linear
+    infinite;
+}
+
+
+/* Different dust positions */
+
+.dust-stream-one span:nth-child(1) {
+  left: 12%;
+  top: 40%;
+  animation-delay: -1s;
+}
+
+.dust-stream-one span:nth-child(2) {
+  left: 25%;
+  top: 20%;
+  animation-delay: -2.1s;
+}
+
+.dust-stream-one span:nth-child(3) {
+  left: 78%;
+  top: 18%;
+  animation-delay: -0.7s;
+}
+
+.dust-stream-one span:nth-child(4) {
+  left: 88%;
+  top: 55%;
+  animation-delay: -3.2s;
+}
+
+.dust-stream-one span:nth-child(5) {
+  left: 23%;
+  top: 79%;
+  animation-delay: -4s;
+}
+
+
+.dust-stream-two {
+  transform:
+    rotate(70deg);
+}
+
+
+.dust-stream-two span {
+  background:
+    rgba(210,130,255,0.7);
+
+  box-shadow:
+    0 0 8px
+    rgba(164,70,255,0.65);
+
+  animation-duration: 7s;
+}
+
+
+.dust-stream-two span:nth-child(1) {
+  left: 15%;
+  top: 35%;
+  animation-delay: -2s;
+}
+
+.dust-stream-two span:nth-child(2) {
+  left: 30%;
+  top: 12%;
+  animation-delay: -3s;
+}
+
+.dust-stream-two span:nth-child(3) {
+  left: 84%;
+  top: 25%;
+  animation-delay: -1s;
+}
+
+.dust-stream-two span:nth-child(4) {
+  left: 80%;
+  top: 70%;
+  animation-delay: -4s;
+}
+
+.dust-stream-two span:nth-child(5) {
+  left: 25%;
+  top: 82%;
+  animation-delay: -5s;
+}
+
+
+.dust-stream-three {
+  transform:
+    rotate(145deg);
+
+  width: 155px;
+  height: 155px;
+
+  margin:
+    -77px 0 0 -77px;
+}
+
+
+.dust-stream-three span {
+  background:
+    rgba(255,75,185,0.65);
+
+  box-shadow:
+    0 0 8px
+    rgba(255,30,170,0.55);
+
+  animation-duration: 8s;
+}
+
+
+.dust-stream-three span:nth-child(1) {
+  left: 18%;
+  top: 30%;
+}
+
+.dust-stream-three span:nth-child(2) {
+  left: 36%;
+  top: 10%;
+  animation-delay: -2s;
+}
+
+.dust-stream-three span:nth-child(3) {
+  left: 82%;
+  top: 35%;
+  animation-delay: -4s;
+}
+
+.dust-stream-three span:nth-child(4) {
+  left: 72%;
+  top: 78%;
+  animation-delay: -6s;
+}
+
+.dust-stream-three span:nth-child(5) {
+  left: 18%;
+  top: 73%;
+  animation-delay: -3s;
+}
+
+
+.dust-stream-four {
+  transform:
+    rotate(-55deg);
+
+  width: 210px;
+  height: 210px;
+
+  margin:
+    -105px 0 0 -105px;
+
+  opacity: 0.6;
+}
+
+
+.dust-stream-four span {
+  width: 2px;
+  height: 2px;
+
+  background:
+    rgba(0,255,185,0.7);
+
+  box-shadow:
+    0 0 7px
+    rgba(0,255,185,0.6);
+
+  animation-duration: 10s;
+}
+
+
+.dust-stream-four span:nth-child(1) {
+  left: 10%;
+  top: 50%;
+}
+
+.dust-stream-four span:nth-child(2) {
+  left: 25%;
+  top: 18%;
+  animation-delay: -2s;
+}
+
+.dust-stream-four span:nth-child(3) {
+  left: 88%;
+  top: 30%;
+  animation-delay: -5s;
+}
+
+.dust-stream-four span:nth-child(4) {
+  left: 78%;
+  top: 80%;
+  animation-delay: -7s;
+}
+
+
+/* ============================================================
+   DUST GRAVITY
+
+   Particles spiral inward rather than orbiting forever.
+   ============================================================ */
+
+@keyframes dustFall {
+
+  0% {
+    transform:
+      translate(
+        calc(var(--dust-x, 0px) + 48px),
+        calc(var(--dust-y, 0px) - 20px)
+      )
+      scale(0.4);
+
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.85;
+  }
+
+  45% {
+    transform:
+      translate(22px, -10px)
+      scale(0.85);
+
+    opacity: 0.9;
+  }
+
+  70% {
+    transform:
+      translate(8px, 4px)
+      scale(1);
+  }
+
+  88% {
+    transform:
+      translate(-4px, 1px)
+      scale(0.6);
+
+    opacity: 0.45;
+  }
+
+  100% {
+    transform:
+      translate(0, 0)
+      scale(0.1);
+
+    opacity: 0;
+  }
+}
+
+
+/* ============================================================
+   GAS WISPS
+
+   Wisps stretch around the gas giant and then get pulled back.
+   ============================================================ */
+
+.gas-wisp {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  pointer-events: none;
+
+  width: 145px;
+  height: 25px;
+
+  margin:
+    -12px 0 0 -72px;
+
+  border-radius: 50%;
+
+  filter: blur(10px);
+
+  mix-blend-mode: screen;
+}
+
+
+.wisp-one {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,229,255,0.23),
+      rgba(88,80,255,0.18),
+      transparent
+    );
+
+  animation:
+    wispOne
+    8s
+    ease-in-out
+    infinite;
+}
+
+
+.wisp-two {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,30,180,0.18),
+      rgba(134,43,255,0.2),
+      transparent
+    );
+
+  animation:
+    wispTwo
+    11s
+    ease-in-out
+    infinite reverse;
+}
+
+
+.wisp-three {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,255,180,0.13),
+      rgba(0,180,255,0.16),
+      transparent
+    );
+
+  animation:
+    wispThree
+    14s
+    ease-in-out
+    infinite;
+}
+
+
+.wisp-four {
+  width: 190px;
+
+  opacity: 0.3;
+
+  filter: blur(18px);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(111,70,255,0.2),
+      rgba(0,229,255,0.14),
+      transparent
+    );
+
+  animation:
+    wispFour
+    17s
+    ease-in-out
+    infinite reverse;
+}
+
+
+@keyframes wispOne {
+
+  0% {
+    transform:
+      rotate(-15deg)
+      translateX(38px)
+      scale(0.7);
+  }
+
+  50% {
+    transform:
+      rotate(65deg)
+      translateX(6px)
+      scale(1.1);
+  }
+
+  100% {
+    transform:
+      rotate(345deg)
+      translateX(38px)
+      scale(0.7);
+  }
+}
+
+
+@keyframes wispTwo {
+
+  0% {
+    transform:
+      rotate(40deg)
+      translateX(42px)
+      scale(0.75);
+  }
+
+  50% {
+    transform:
+      rotate(-70deg)
+      translateX(8px)
+      scale(1.15);
+  }
+
+  100% {
+    transform:
+      rotate(-320deg)
+      translateX(42px)
+      scale(0.75);
+  }
+}
+
+
+@keyframes wispThree {
+
+  0% {
+    transform:
+      rotate(110deg)
+      translateX(35px)
+      scale(0.8);
+  }
+
+  50% {
+    transform:
+      rotate(220deg)
+      translateX(5px)
+      scale(1.1);
+  }
+
+  100% {
+    transform:
+      rotate(470deg)
+      translateX(35px)
+      scale(0.8);
+  }
+}
+
+
+@keyframes wispFour {
+
+  0% {
+    transform:
+      rotate(-80deg)
+      translateX(55px)
+      scale(0.65);
+  }
+
+  50% {
+    transform:
+      rotate(40deg)
+      translateX(10px)
+      scale(1.15);
+  }
+
+  100% {
+    transform:
+      rotate(280deg)
+      translateX(55px)
+      scale(0.65);
+  }
+}
+
+
+/* ============================================================
+   BRAND
+   ============================================================ */
+
+.login-brand {
+  position: relative;
+
+  z-index: 40;
+
+  text-align: center;
+
+  margin-bottom: 27px;
+}
+
+
+.login-brand h1 {
+  margin:
+    0 0 7px;
+
+  font-family:
+    "Balboa",
+    "Balboa Plus",
+    "Allotrope Variable",
+    sans-serif;
+
+  font-size: 36px;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  letter-spacing: 0.28em;
+
+  text-shadow:
+    0 0 22px
+    rgba(104,125,255,0.18);
+}
+
+
+.login-brand p {
+  margin: 0;
+
+  color:
+    rgba(234,239,255,0.44);
+
+  font-family:
+    "Halyard Display",
+    "Halyard",
+    sans-serif;
+
+  font-size: 13px;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+.login-form {
+  position: relative;
+
+  z-index: 50;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+.login-form label {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  color:
+    rgba(235,240,255,0.65);
+
+  font-size: 13px;
+}
+
+
+.login-form input {
+  width: 100%;
+  height: 52px;
+
+  padding:
+    0 15px;
+
+  outline: none;
+
+  border:
+    1px solid
+    rgba(105,132,202,0.13);
+
+  border-radius: 3px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(255,255,255,0.025),
+      rgba(44,72,145,0.045),
+      rgba(255,255,255,0.02)
+    );
+
+  font-family:
+    "Halyard Display",
+    "Halyard",
+    sans-serif;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+
+.login-form input::placeholder {
+  color:
+    rgba(230,235,255,0.23);
+}
+
+
+.login-form input:focus {
+  border-color:
+    rgba(0,225,255,0.38);
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(0,225,255,0.04),
+      rgba(90,60,255,0.05),
+      rgba(255,0,160,0.025)
+    );
+
+  box-shadow:
+    0 0 22px
+    rgba(0,190,255,0.07);
+}
+
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+.enter-button {
+  position: relative;
+
+  height: 52px;
+
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  border: none;
+
+  border-radius: 3px;
+
+  cursor: pointer;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      105deg,
+
+      #087fff,
+      #4c51ff,
+      #803dff,
+      #e127d4,
+      #ff258c,
+      #6c54ff,
+      #087fff
+    );
+
+  background-size:
+    400% 100%;
+
+  box-shadow:
+    0 8px 28px
+    rgba(82,73,255,0.18);
+
+  font-family:
+    "Halyard Display",
+    "Halyard",
+    sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  animation:
+    buttonUniverse
+    10s
+    linear
+    infinite;
+
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.button-energy {
+  position: absolute;
+
+  width: 170px;
+  height: 90px;
+
+  left: -180px;
+  top: -20px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0,255,255,0.7),
+      rgba(255,0,180,0.25),
+      transparent 70%
+    );
+
+  filter: blur(13px);
+
+  animation:
+    buttonEnergy
+    5s
+    ease-in-out
+    infinite;
+}
+
+
+.button-glow {
+  position: absolute;
+
+  width: 45px;
+  height: 130px;
+
+  left: -80px;
+  top: -40px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.45),
+      transparent
+    );
+
+  filter: blur(6px);
+
+  transform:
+    rotate(20deg);
+
+  animation:
+    buttonShimmer
+    5.5s
+    ease-in-out
+    infinite;
+}
+
+
+.button-text {
+  position: relative;
+
+  z-index: 5;
+}
+
+
+.enter-button:hover {
+  transform:
+    translateY(-2px)
+    scale(1.01);
+
+  filter:
+    brightness(1.16)
+    saturate(1.2);
+
+  box-shadow:
+    0 12px 34px
+    rgba(0,200,255,0.12),
+
+    0 0 35px
+    rgba(111,60,255,0.16),
+
+    0 0 42px
+    rgba(255,0,160,0.09);
+}
+
+
+.enter-button:active {
+  transform:
+    translateY(0)
+    scale(0.99);
+}
+
+
+@keyframes buttonUniverse {
+
+  from {
+    background-position:
+      0% 50%;
+  }
+
+  to {
+    background-position:
+      400% 50%;
+  }
+}
+
+
+@keyframes buttonEnergy {
+
+  0% {
+    left: -180px;
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.7;
+  }
+
+  100% {
+    left: 500px;
+    opacity: 0;
+  }
+}
+
+
+@keyframes buttonShimmer {
+
+  0% {
+    left: -80px;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.7;
+  }
+
+  65% {
+    left: 470px;
+    opacity: 0;
+  }
+
+  100% {
+    left: 470px;
+    opacity: 0;
+  }
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.login-footer {
+  position: relative;
+
+  z-index: 40;
+
+  margin:
+    21px 0 0;
+
+  text-align: center;
+
+  color:
+    rgba(229,235,255,0.21);
+
+  font-family:
+    "LoRe 12OT",
+    "LoRe",
+    "Halyard Display",
+    sans-serif;
+
+  font-size: 10px;
+}
+
+
+.login-footer i {
+  margin:
+    0 6px;
+
+  font-style: normal;
+
+  color:
+    rgba(0,220,255,0.3);
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+  .login-card {
+    width:
+      calc(100% - 28px);
+
+    padding:
+      28px 23px 23px;
+  }
+
+  .gas-giant-container {
+    transform:
+      scale(0.9);
+  }
+
+  .login-brand {
+    margin-bottom: 23px;
+  }
+
+  .login-brand h1 {
+    font-size: 32px;
+  }
+
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      0.001ms !important;
+
+    animation-iteration-count:
+      1 !important;
+  }
+}
