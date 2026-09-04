@@ -1,770 +1,458 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./home.css";
+import "./Home.css";
+import Settings from "../../components/pages/Settings/Settings";
+import Project from "../../components/pages/Project/Project";
 
-function Home() {
-  const [command, setCommand] = useState("");
-  const [profileOpen, setProfileOpen] = useState(false);
-
+export default function Home() {
   const orbRef = useRef(null);
-  const particlesRef = useRef(null);
+  const animationRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const streamRef = useRef(null);
+
+  const [voiceLevel, setVoiceLevel] = useState(0);
+  const [agentVoice, setAgentVoice] = useState(0);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [command, setCommand] = useState("");
+
+  /* =========================================
+     MICROPHONE
+  ========================================= */
 
   useEffect(() => {
-    let audioContext;
-    let analyser;
-    let stream;
-    let animationFrame;
+    let mounted = true;
 
-    let currentLevel = 0;
-    let agentLevel = 0;
-
-    const startAudio = async () => {
+    const startMicrophone = async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
+        if (!navigator.mediaDevices?.getUserMedia) {
+          console.log("Microphone is not supported.");
+          return;
+        }
 
-        audioContext = new (
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+
+        if (!mounted) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
+        streamRef.current = stream;
+
+        const AudioContext =
           window.AudioContext ||
-          window.webkitAudioContext
-        )();
+          window.webkitAudioContext;
 
-        analyser = audioContext.createAnalyser();
+        if (!AudioContext) {
+          console.log("AudioContext is not supported.");
+          return;
+        }
+
+        const audioContext = new AudioContext();
+
+        const analyser =
+          audioContext.createAnalyser();
 
         analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.72;
+        analyser.smoothingTimeConstant = 0.82;
 
         const source =
           audioContext.createMediaStreamSource(stream);
 
         source.connect(analyser);
 
-        const data = new Uint8Array(
+        audioContextRef.current = audioContext;
+
+        const dataArray = new Uint8Array(
           analyser.frequencyBinCount
         );
 
-        const animateAudio = () => {
-          if (!analyser || !orbRef.current) {
-            animationFrame =
-              requestAnimationFrame(animateAudio);
-            return;
+        let smoothLevel = 0;
+
+        const detectVoice = () => {
+          if (!mounted) return;
+
+          analyser.getByteFrequencyData(dataArray);
+
+          let total = 0;
+
+          for (let i = 0; i < dataArray.length; i++) {
+            total += dataArray[i];
           }
 
-          analyser.getByteFrequencyData(data);
+          const average =
+            total / dataArray.length / 255;
 
-          let sum = 0;
+          const intensity = Math.min(
+            1,
+            average * 3
+          );
 
-          for (let i = 0; i < data.length; i++) {
-            sum += data[i];
+          smoothLevel =
+            smoothLevel * 0.84 +
+            intensity * 0.16;
+
+          setVoiceLevel(smoothLevel);
+
+          if (orbRef.current) {
+            orbRef.current.style.setProperty(
+              "--voice",
+              smoothLevel
+            );
           }
 
-          const rawLevel =
-            sum / data.length / 255;
-
-          /*
-           * Stronger voice response.
-           */
-          currentLevel +=
-            (rawLevel - currentLevel) * 0.22;
-
-          agentLevel +=
-            ((agentLevel || 0) - agentLevel) * 0.04;
-
-          const microphone =
-            Math.min(currentLevel * 4.8, 1);
-
-          const combined =
-            Math.min(
-              microphone +
-                agentLevel * 0.9,
-              1
-            );
-
-          orbRef.current.style.setProperty(
-            "--voice",
-            microphone.toFixed(3)
-          );
-
-          orbRef.current.style.setProperty(
-            "--sound",
-            combined.toFixed(3)
-          );
-
-          animationFrame =
-            requestAnimationFrame(
-              animateAudio
-            );
+          animationRef.current =
+            requestAnimationFrame(detectVoice);
         };
 
-        animateAudio();
+        detectVoice();
       } catch (error) {
-        console.log("Microphone unavailable");
+        console.log(
+          "Microphone permission was not granted.",
+          error
+        );
       }
     };
 
-    startAudio();
+    startMicrophone();
 
-    const resumeAudio = () => {
-      if (
-        audioContext &&
-        audioContext.state === "suspended"
-      ) {
-        audioContext.resume();
+    return () => {
+      mounted = false;
+
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+
+      if (streamRef.current) {
+        streamRef.current
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
+
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
       }
     };
+  }, []);
 
-    window.addEventListener(
-      "pointerdown",
-      resumeAudio
-    );
+  /* =========================================
+     JARVIS SPEAKING EVENT
+  ========================================= */
 
-    window.addEventListener(
-      "keydown",
-      resumeAudio
-    );
-
-    /*
-     * Agent speech.
-     *
-     * Backend can dispatch:
-     *
-     * window.dispatchEvent(
-     *   new CustomEvent("jarvis:speaking", {
-     *     detail: {
-     *       active: true,
-     *       level: 0.8
-     *     }
-     *   })
-     * );
-     */
-
-    const handleAgentSpeech = (event) => {
+  useEffect(() => {
+    const handleSpeaking = (event) => {
       const level =
-        event.detail?.level || 0;
+        event.detail?.level ?? 0.8;
 
-      agentLevel = Math.min(level, 1);
+      setAgentVoice(level);
 
       if (orbRef.current) {
         orbRef.current.style.setProperty(
           "--agent-voice",
-          agentLevel.toFixed(3)
-        );
-
-        orbRef.current.style.setProperty(
-          "--sound",
-          Math.min(
-            currentLevel * 4.8 +
-              agentLevel,
-            1
-          ).toFixed(3)
+          level
         );
       }
+
+      setTimeout(() => {
+        setAgentVoice(0);
+
+        if (orbRef.current) {
+          orbRef.current.style.setProperty(
+            "--agent-voice",
+            0
+          );
+        }
+      }, 250);
     };
 
     window.addEventListener(
       "jarvis:speaking",
-      handleAgentSpeech
+      handleSpeaking
     );
 
-    /*
-     * Lightweight atmospheric particles.
-     *
-     * These are DOM elements rather than thousands
-     * of canvas particles, keeping the page smooth.
-     */
-
-    const particleContainer =
-      particlesRef.current;
-
-    const particleCount =
-      window.innerWidth < 700 ? 22 : 34;
-
-    const particles = [];
-
-    for (
-      let i = 0;
-      i < particleCount;
-      i++
-    ) {
-      const particle =
-        document.createElement("span");
-
-      particle.className =
-        "orb-particle";
-
-      particleContainer?.appendChild(
-        particle
-      );
-
-      particles.push({
-        element: particle,
-
-        angle:
-          Math.random() *
-          Math.PI *
-          2,
-
-        radius:
-          205 +
-          Math.random() * 95,
-
-        depth:
-          Math.random() * 2 -
-          1,
-
-        speed:
-          (0.00010 +
-            Math.random() * 0.00020) *
-          (Math.random() > 0.5
-            ? 1
-            : -1),
-
-        wobble:
-          Math.random() *
-          Math.PI *
-          2,
-
-        wobbleSpeed:
-          0.0004 +
-          Math.random() * 0.0005,
-
-        size:
-          2 +
-          Math.random() * 2.5,
-      });
-    }
-
-    let lastTime = performance.now();
-
-    const animateParticles = (time) => {
-      const dt =
-        time - lastTime;
-
-      lastTime = time;
-
-      const orb =
-        orbRef.current;
-
-      if (orb && particles.length) {
-        const styles =
-          getComputedStyle(orb);
-
-        const sound =
-          parseFloat(
-            styles.getPropertyValue(
-              "--sound"
-            )
-          ) || 0;
-
-        const twist =
-          parseFloat(
-            styles.getPropertyValue(
-              "--twist"
-            )
-          ) || 0;
-
-        const spin =
-          parseFloat(
-            styles.getPropertyValue(
-              "--spin"
-            )
-          ) || 0;
-
-        particles.forEach(
-          (particle, index) => {
-            /*
-             * Blob rotation influences
-             * particle orbital movement.
-             */
-            particle.angle +=
-              particle.speed *
-              dt *
-              (1 +
-                sound * 4 +
-                Math.abs(spin) * 0.3);
-
-            particle.wobble +=
-              particle.wobbleSpeed *
-              dt;
-
-            /*
-             * Voice pushes particles outward,
-             * gravity pulls them back in.
-             */
-            const breathing =
-              Math.sin(
-                particle.wobble
-              ) *
-              10;
-
-            const voicePush =
-              sound *
-              (28 +
-                Math.sin(
-                  particle.wobble
-                ) *
-                  12);
-
-            const gravityPull =
-              sound * 8;
-
-            const radius =
-              particle.radius +
-              breathing +
-              voicePush -
-              gravityPull;
-
-            const x =
-              Math.cos(
-                particle.angle +
-                  twist * 0.0008
-              ) *
-              radius;
-
-            const y =
-              Math.sin(
-                particle.angle +
-                  twist * 0.001
-              ) *
-              radius *
-              0.72;
-
-            /*
-             * Fake depth projection.
-             */
-            const z =
-              Math.sin(
-                particle.angle
-              ) *
-                particle.radius *
-                0.4 +
-              particle.depth *
-                45;
-
-            const scale =
-              0.72 +
-              ((z + 140) / 280) *
-                0.55;
-
-            const opacity =
-              0.35 +
-              ((z + 140) / 280) *
-                0.45;
-
-            particle.element.style.transform =
-              `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
-
-            particle.element.style.opacity =
-              Math.min(
-                opacity +
-                  sound * 0.35,
-                1
-              );
-
-            particle.element.style.width =
-              `${particle.size}px`;
-
-            particle.element.style.height =
-              `${particle.size}px`;
-          });
-      }
-
-      animationFrame =
-        requestAnimationFrame(
-          animateParticles
-        );
-    };
-
-    /*
-     * Particle animation uses the same RAF
-     * as the audio-driven visual state.
-     */
-    cancelAnimationFrame(animationFrame);
-
-    let particleFrame;
-
-    const particleLoop = (time) => {
-      animateParticles(time);
-
-      particleFrame =
-        requestAnimationFrame(
-          particleLoop
-        );
-    };
-
-    particleFrame =
-      requestAnimationFrame(
-        particleLoop
-      );
-
     return () => {
-      cancelAnimationFrame(
-        animationFrame
-      );
-
-      cancelAnimationFrame(
-        particleFrame
-      );
-
-      window.removeEventListener(
-        "pointerdown",
-        resumeAudio
-      );
-
-      window.removeEventListener(
-        "keydown",
-        resumeAudio
-      );
-
       window.removeEventListener(
         "jarvis:speaking",
-        handleAgentSpeech
-      );
-
-      if (stream) {
-        stream
-          .getTracks()
-          .forEach((track) =>
-            track.stop()
-          );
-      }
-
-      if (audioContext) {
-        audioContext.close();
-      }
-
-      particles.forEach(
-        (particle) => {
-          particle.element.remove();
-        }
+        handleSpeaking
       );
     };
   }, []);
 
-  /*
-   * Slow random rotation + inward twist.
-   */
-  useEffect(() => {
-    const orb = orbRef.current;
+  /* =========================================
+     COMMAND
+  ========================================= */
 
-    if (!orb) return;
+  const sendCommand = () => {
+    const text = command.trim();
 
-    let animationFrame;
-    let previous = performance.now();
-
-    let spin = 0;
-    let twist = 0;
-
-    let targetSpin =
-      Math.random() > 0.5
-        ? 1
-        : -1;
-
-    let targetTwist =
-      Math.random() > 0.5
-        ? 1
-        : -1;
-
-    let nextDirectionChange =
-      performance.now() +
-      5000 +
-      Math.random() * 6000;
-
-    const animate = (time) => {
-      const dt =
-        time - previous;
-
-      previous = time;
-
-      /*
-       * Randomly change direction,
-       * but keep everything slow and organic.
-       */
-      if (
-        time >
-        nextDirectionChange
-      ) {
-        targetSpin =
-          Math.random() > 0.5
-            ? 1
-            : -1;
-
-        targetTwist =
-          Math.random() > 0.5
-            ? 1
-            : -1;
-
-        nextDirectionChange =
-          time +
-          5000 +
-          Math.random() * 7000;
-      }
-
-      spin +=
-        (targetSpin * 0.35 - spin) *
-        0.0008 *
-        dt;
-
-      twist +=
-        (targetTwist * 1.0 - twist) *
-        0.00055 *
-        dt;
-
-      orb.style.setProperty(
-        "--spin",
-        spin.toFixed(3)
-      );
-
-      orb.style.setProperty(
-        "--twist",
-        twist.toFixed(3)
-      );
-
-      /*
-       * The CSS variables drive the actual
-       * blob rotation and internal layers.
-       */
-      orb.style.setProperty(
-        "--rotation",
-        `${spin * 22}deg`
-      );
-
-      orb.style.setProperty(
-        "--twist-angle",
-        `${twist * 18}deg`
-      );
-
-      animationFrame =
-        requestAnimationFrame(
-          animate
-        );
-    };
-
-    animationFrame =
-      requestAnimationFrame(
-        animate
-      );
-
-    return () => {
-      cancelAnimationFrame(
-        animationFrame
-      );
-    };
-  }, []);
-
-  const submitCommand = (event) => {
-    event.preventDefault();
-
-    const value =
-      command.trim();
-
-    if (!value) return;
+    if (!text) return;
 
     window.dispatchEvent(
-      new CustomEvent(
-        "jarvis:command",
-        {
-          detail: {
-            command: value,
-          },
-        }
-      )
+      new CustomEvent("jarvis:command", {
+        detail: {
+          command: text,
+        },
+      })
     );
 
     setCommand("");
   };
 
+  const handleCommandKeyDown = (event) => {
+    if (event.key === "Enter") {
+      sendCommand();
+    }
+  };
+
+  /* =========================================
+     NAVIGATION
+  ========================================= */
+
+  const openProjects = () => {
+    window.dispatchEvent(
+      new Event("jarvis:projects")
+    );
+  };
+
+  const openSettings = () => {
+    window.dispatchEvent(
+      new Event("jarvis:settings")
+    );
+  };
+
+  const openVoice = () => {
+    window.dispatchEvent(
+      new Event("jarvis:voice")
+    );
+  };
+
+  const openThemes = () => {
+    window.dispatchEvent(
+      new Event("jarvis:themes")
+    );
+  };
+
+  /* =========================================
+     RENDER
+  ========================================= */
+
   return (
-    <main
-      className={`home-page ${
-        profileOpen
-          ? "profile-active"
-          : ""
-      }`}
-    >
-      <div className="home-cosmos" />
-      <div className="home-stars" />
+    <div className="jarvis-home">
 
-      <div className="home-nebula nebula-one" />
-      <div className="home-nebula nebula-two" />
+      {/* HEADER */}
 
-      <div className="profile-area">
+      <header className="jarvis-header">
+
+        <div className="jarvis-brand">
+          <div className="brand-dot" />
+
+          <div>
+            <div className="brand-title">
+              JARVIS
+            </div>
+
+            <div className="brand-subtitle">
+              AI SYSTEM
+            </div>
+          </div>
+        </div>
+
+        <div className="header-status">
+          <span className="status-indicator" />
+          SYSTEM ONLINE
+        </div>
+
         <button
           className="profile-button"
           onClick={() =>
-            setProfileOpen(
-              (value) => !value
-            )
+            setProfileOpen((value) => !value)
           }
         >
-          <span>J</span>
+          <span className="profile-icon">
+            ◉
+          </span>
+
+          <span>PROFILE</span>
         </button>
+      </header>
 
-        {profileOpen && (
-          <div className="profile-menu">
-            <div className="profile-menu-title">
-              TOMMY
-            </div>
+      {/* PROFILE */}
 
-            <button
-              onClick={() =>
-                window.dispatchEvent(
-                  new Event(
-                    "jarvis:projects"
-                  )
-                )
-              }
-            >
-              Projects
-            </button>
+      {profileOpen && (
+        <div className="profile-panel">
+
+          <div className="profile-panel-header">
+            <span>USER PROFILE</span>
 
             <button
+              className="profile-close"
               onClick={() =>
-                window.dispatchEvent(
-                  new Event(
-                    "jarvis:settings"
-                  )
-                )
+                setProfileOpen(false)
               }
             >
-              Settings
-            </button>
-
-            <button
-              onClick={() =>
-                window.dispatchEvent(
-                  new Event(
-                    "jarvis:themes"
-                  )
-                )
-              }
-            >
-              Themes
+              ×
             </button>
           </div>
-        )}
-      </div>
 
-      <button
-        className="projects-launcher"
-        onClick={() =>
-          window.dispatchEvent(
-            new Event(
-              "jarvis:projects"
-            )
-          )
-        }
-      >
-        <span>+</span>
-        Projects
-      </button>
+          <div className="profile-avatar">
+            ◉
+          </div>
 
-      <div className="home-brand">
-        <div className="brand-kicker">
-          AUTONOMOUS INTELLIGENCE
+          <div className="profile-name">
+            JARVIS USER
+          </div>
+
+          <div className="profile-status">
+            SYSTEM ACCESS GRANTED
+          </div>
         </div>
+      )}
 
-        <div className="brand-name">
-          TOMMY
-        </div>
-      </div>
+      {/* MAIN */}
 
-      <section className="jarvis-orb-stage">
-        <div
-          ref={particlesRef}
-          className="orb-particles"
-        />
+      <main className="jarvis-main">
 
         <div
-          ref={orbRef}
           className="jarvis-orb"
+          ref={orbRef}
+          style={{
+            "--voice": voiceLevel,
+            "--agent-voice": agentVoice,
+          }}
         >
-          <div className="orb-mist mist-one" />
-          <div className="orb-mist mist-two" />
-          <div className="orb-mist mist-three" />
-
-          <div className="orb-gravity-smoke gravity-smoke-one" />
-          <div className="orb-gravity-smoke gravity-smoke-two" />
-          <div className="orb-gravity-smoke gravity-smoke-three" />
+          <div className="orb-mist orb-mist-1" />
+          <div className="orb-mist orb-mist-2" />
+          <div className="orb-mist orb-mist-3" />
 
           <div className="orb-glow" />
 
           <div className="orb-body">
-            <div className="orb-liquid liquid-one" />
-            <div className="orb-liquid liquid-two" />
-            <div className="orb-liquid liquid-three" />
 
-            <div className="orb-smoke smoke-one" />
-            <div className="orb-smoke smoke-two" />
-            <div className="orb-smoke smoke-three" />
+            <div className="orb-liquid orb-liquid-1" />
+            <div className="orb-liquid orb-liquid-2" />
+            <div className="orb-liquid orb-liquid-3" />
+
+            <div className="orb-smoke orb-smoke-1" />
+            <div className="orb-smoke orb-smoke-2" />
+            <div className="orb-smoke orb-smoke-3" />
 
             <div className="orb-highlight" />
 
-            <div className="orb-core" />
+            <div className="orb-core">
+              <div className="core-light" />
+            </div>
           </div>
         </div>
 
-        <div className="orb-status">
-          <span />
-          SYSTEM ONLINE
+        <div className="jarvis-system-text">
+
+          <div className="system-title">
+            JARVIS
+          </div>
+
+          <div className="system-message">
+            LISTENING FOR COMMAND
+          </div>
+
+          <div className="voice-level">
+            VOICE LEVEL{" "}
+            {Math.round(voiceLevel * 100)}%
+          </div>
+
         </div>
-      </section>
+      </main>
 
-      <form
-        className="command-area"
-        onSubmit={submitCommand}
-      >
+      {/* COMMAND */}
+
+      <div className="jarvis-command-area">
+
+        <div className="command-box">
+
+          <span className="command-prefix">
+            &gt;
+          </span>
+
+          <input
+            value={command}
+            onChange={(event) =>
+              setCommand(event.target.value)
+            }
+            onKeyDown={handleCommandKeyDown}
+            placeholder="Enter command..."
+          />
+
+          <button
+            className="command-send"
+            onClick={sendCommand}
+          >
+            SEND
+          </button>
+
+        </div>
+
         <button
-          type="button"
           className="voice-button"
-          onClick={() =>
-            window.dispatchEvent(
-              new Event(
-                "jarvis:voice"
-              )
-            )
-          }
+          onClick={openVoice}
         >
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
+          🎙
         </button>
 
-        <input
-          value={command}
-          onChange={(event) =>
-            setCommand(
-              event.target.value
-            )
-          }
-          placeholder="Command Jarvis..."
-        />
-
-        <button
-          className="command-submit"
-          type="submit"
-        >
-          →
-        </button>
-      </form>
-
-      <div className="home-footer">
-        FEATHERLESS
-        <span>/</span>
-        AUTONOMOUS AGENT
       </div>
 
-      {profileOpen && (
+      {/* NAVIGATION */}
+
+      <nav className="jarvis-navigation">
+
         <button
-          className="cinematic-backdrop"
-          onClick={() =>
-            setProfileOpen(false)
-          }
-        />
-      )}
-    </main>
+          className="nav-button"
+          onClick={openProjects}
+        >
+          <span className="nav-icon">
+            ◈
+          </span>
+
+          <span>
+            PROJECTS
+          </span>
+        </button>
+
+        <button
+          className="nav-button"
+          onClick={openSettings}
+        >
+          <span className="nav-icon">
+            ⚙
+          </span>
+
+          <span>
+            SETTINGS
+          </span>
+        </button>
+
+        <button
+          className="nav-button"
+          onClick={openThemes}
+        >
+          <span className="nav-icon">
+            ◇
+          </span>
+
+          <span>
+            THEMES
+          </span>
+        </button>
+
+      </nav>
+
+      {/* PROJECTS WINDOW */}
+
+      <Project />
+
+      {/* SETTINGS WINDOW */}
+
+      <Settings />
+
+    </div>
   );
 }
-
-export default Home;
