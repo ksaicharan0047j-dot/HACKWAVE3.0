@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./login.css";
 
-export default function Login() {
+export default function Login({ onLogin }) {
   const pageRef = useRef(null);
 
   useEffect(() => {
@@ -9,14 +9,9 @@ export default function Login() {
 
     if (!page) return;
 
-    /*
-     * Give the cosmic field a different initial direction
-     * every time the page loads.
-     */
+    // Randomize the universe movement every time the page opens.
     const direction = Math.random() > 0.5 ? 1 : -1;
-
     const angle = Math.random() * 360;
-
     const speed = 24 + Math.random() * 16;
 
     page.style.setProperty(
@@ -33,10 +28,26 @@ export default function Login() {
       "--universe-speed",
       `${speed}s`
     );
+
+    // Give the orb a slightly different initial rotation
+    // every time the page loads.
+    const orbDirection = Math.random() > 0.5 ? 1 : -1;
+    const orbSpeed = 18 + Math.random() * 14;
+
+    page.style.setProperty(
+      "--orb-direction",
+      orbDirection
+    );
+
+    page.style.setProperty(
+      "--orb-speed",
+      `${orbSpeed}s`
+    );
   }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    onLogin?.();
   };
 
   return (
@@ -44,10 +55,9 @@ export default function Login() {
       ref={pageRef}
       className="login-page"
     >
-
       {/* =====================================================
-          COSMOS
-      ===================================================== */}
+          COSMIC BACKGROUND
+      ====================================================== */}
 
       <div className="cosmos-background" />
 
@@ -59,29 +69,28 @@ export default function Login() {
       <div className="star-field star-field-two" />
       <div className="star-field star-field-three" />
 
-
       {/* =====================================================
-          LOGIN PANEL
-      ===================================================== */}
+          LOGIN CARD
+      ====================================================== */}
 
       <section className="login-card">
 
         <div className="card-cosmic-light" />
 
-
         {/* ===================================================
-            GAS GIANT
-        =================================================== */}
+            ORBITAL / ATMOSPHERIC AREA
+        ==================================================== */}
 
         <div className="gas-giant-container">
 
-          {/* Outer atmospheric haze */}
+          {/* Outer atmospheric glow */}
           <div className="planet-atmosphere atmosphere-one" />
           <div className="planet-atmosphere atmosphere-two" />
           <div className="planet-atmosphere atmosphere-three" />
 
-
-          {/* Dust being pulled toward the planet */}
+          {/* =================================================
+              DUST BEING PULLED INWARD
+          ================================================== */}
 
           <div className="dust-stream dust-stream-one">
             <span />
@@ -114,46 +123,34 @@ export default function Login() {
             <span />
           </div>
 
-
           {/* =================================================
-              THE GAS GIANT ITSELF
-          ================================================= */}
+              ACTUAL GAS / SMOKE BODY
+          ================================================== */}
 
           <div className="gas-giant">
 
-            {/* Deep transparent atmospheric layer */}
             <div className="gas-layer layer-one" />
-
-            {/* Cyan gas */}
             <div className="gas-layer layer-two" />
-
-            {/* Violet gas */}
             <div className="gas-layer layer-three" />
-
-            {/* Magenta gas */}
             <div className="gas-layer layer-four" />
-
-            {/* Blue gas */}
             <div className="gas-layer layer-five" />
-
-            {/* Green atmospheric turbulence */}
             <div className="gas-layer layer-six" />
 
-            {/* Internal moving storm */}
+            {/* Internal turbulent storms */}
             <div className="gas-storm storm-one" />
             <div className="gas-storm storm-two" />
             <div className="gas-storm storm-three" />
 
-            {/* Bright gas pocket */}
+            {/* Light escaping from the interior */}
             <div className="gas-highlight" />
 
-            {/* Deep gravitational core */}
             <div className="gas-core" />
 
           </div>
 
-
-          {/* Wisps wrapping around the planet */}
+          {/* =================================================
+              SMOKE / GAS WISPS
+          ================================================== */}
 
           <div className="gas-wisp wisp-one" />
           <div className="gas-wisp wisp-two" />
@@ -162,25 +159,21 @@ export default function Login() {
 
         </div>
 
-
-        {/* =====================================================
+        {/* ===================================================
             BRAND
-        ===================================================== */}
+        ==================================================== */}
 
         <div className="login-brand">
-
-          <h1>JARVIS</h1>
+          <h1>TOMMY</h1>
 
           <p>
             Your autonomous AI workspace
           </p>
-
         </div>
 
-
-        {/* =====================================================
+        {/* ===================================================
             LOGIN FORM
-        ===================================================== */}
+        ==================================================== */}
 
         <form
           className="login-form"
@@ -192,47 +185,42 @@ export default function Login() {
 
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
               autoComplete="email"
             />
           </label>
-
 
           <label>
             <span>Password</span>
 
             <input
               type="password"
+              name="password"
               placeholder="Enter your password"
               autoComplete="current-password"
             />
           </label>
 
-
           <button
             type="submit"
             className="enter-button"
           >
-
             <span className="button-energy" />
-
             <span className="button-glow" />
 
             <span className="button-text">
-              Enter Jarvis
+              Enter TOMMY
             </span>
-
           </button>
 
         </form>
 
-
-        {/* =====================================================
+        {/* ===================================================
             FOOTER
-        ===================================================== */}
+        ==================================================== */}
 
         <p className="login-footer">
-
           <span>AI workspace</span>
 
           <i>•</i>
@@ -242,11 +230,9 @@ export default function Login() {
           <i>•</i>
 
           <span>Autonomous execution</span>
-
         </p>
 
       </section>
-
     </main>
   );
 }
