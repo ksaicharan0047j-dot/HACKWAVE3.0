@@ -6,9 +6,9 @@
   position: relative;
 
   width: 100%;
-  min-height: 100%;
+  min-height: 100vh;
 
-  padding: 42px 48px 55px;
+  padding: 30px 48px 55px;
 
   box-sizing: border-box;
 
@@ -16,24 +16,152 @@
 
   overflow: hidden;
 
-  animation: projectsFadeIn 0.55s ease both;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(0, 220, 255, 0.06),
+      transparent 45%
+    );
+
+  animation:
+    projectsFadeIn
+    0.5s
+    ease both;
 }
 
 
 /* ============================================================
-   FADE IN
-   Runs whenever the Projects component is mounted.
+   FADE
    ============================================================ */
 
 @keyframes projectsFadeIn {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform:
+      translateY(15px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+
+.projects-topbar {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 42px;
+
+  z-index: 10;
+}
+
+
+.projects-back-button {
+  border:
+    1px solid
+    rgba(130, 225, 255, 0.15);
+
+  border-radius: 999px;
+
+  padding:
+    9px
+    15px;
+
+  background:
+    rgba(5, 20, 30, 0.55);
+
+  color:
+    rgba(220, 250, 255, 0.6);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+
+  cursor: pointer;
+
+  backdrop-filter:
+    blur(14px);
+
+  transition:
+    0.25s ease;
+}
+
+
+.projects-back-button:hover {
+  color: #ffffff;
+
+  border-color:
+    rgba(0, 220, 255, 0.42);
+
+  background:
+    rgba(0, 210, 255, 0.08);
+
+  transform:
+    translateX(-3px);
+}
+
+
+.projects-system-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color:
+    rgba(175, 235, 250, 0.35);
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.17em;
+}
+
+
+.projects-system-status span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(70, 240, 255, 0.9);
+
+  box-shadow:
+    0 0 12px
+    rgba(0, 225, 255, 0.8);
+
+  animation:
+    statusPulse
+    2s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes statusPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
@@ -62,64 +190,76 @@
 .projects-eyebrow {
   display: block;
 
-  margin-bottom: 9px;
+  margin-bottom: 10px;
 
-  color: rgba(0, 225, 255, 0.72);
+  color:
+    rgba(0, 225, 255, 0.72);
 
   font-size: 10px;
 
   font-weight: 700;
 
   letter-spacing: 0.28em;
-
-  text-transform: uppercase;
 }
 
 
 .projects-header h1 {
   margin: 0;
 
-  font-size: 31px;
+  color:
+    rgba(255, 255, 255, 0.94);
+
+  font-size: 32px;
 
   line-height: 1.05;
 
   font-weight: 600;
 
-  letter-spacing: -0.02em;
-
-  color: rgba(255, 255, 255, 0.94);
+  letter-spacing: -0.025em;
 }
 
 
 .projects-header p {
-  margin: 9px 0 0;
+  margin:
+    10px
+    0
+    0;
 
-  color: rgba(225, 235, 255, 0.48);
+  color:
+    rgba(225, 235, 255, 0.43);
 
   font-size: 13px;
 }
 
 
 /* ============================================================
-   PROJECT COUNT
+   COUNT
    ============================================================ */
 
 .projects-count {
   min-width: 76px;
 
-  padding: 11px 15px;
+  padding:
+    12px
+    15px;
+
+  border:
+    1px solid
+    rgba(130, 225, 255, 0.12);
 
   border-radius: 17px;
 
-  background: rgba(235, 246, 255, 0.9);
+  background:
+    rgba(220, 245, 252, 0.92);
 
-  color: #101a2c;
+  color:
+    #101a2c;
 
   text-align: center;
 
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.12),
-    0 0 25px rgba(0, 220, 255, 0.08);
+    0 12px 40px
+    rgba(0, 0, 0, 0.2);
 }
 
 
@@ -145,7 +285,7 @@
 
   letter-spacing: 0.16em;
 
-  opacity: 0.52;
+  opacity: 0.5;
 }
 
 
@@ -158,23 +298,16 @@
 
   display: flex;
 
-  flex-direction: row;
-
-  flex-wrap: nowrap;
-
-  align-items: stretch;
-
   gap: 21px;
 
   width: 100%;
 
-  padding: 10px 6px 28px;
+  padding:
+    10px
+    6px
+    28px;
 
   overflow-x: auto;
-
-  overflow-y: visible;
-
-  scroll-behavior: smooth;
 
   scrollbar-width: thin;
 
@@ -184,26 +317,21 @@
 }
 
 
-/* ============================================================
-   SCROLLBAR
-   ============================================================ */
-
 .projects-row::-webkit-scrollbar {
   height: 5px;
 }
+
 
 .projects-row::-webkit-scrollbar-track {
   background: transparent;
 }
 
+
 .projects-row::-webkit-scrollbar-thumb {
   border-radius: 20px;
 
-  background: rgba(0, 220, 255, 0.3);
-}
-
-.projects-row::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 220, 255, 0.55);
+  background:
+    rgba(0, 220, 255, 0.3);
 }
 
 
@@ -214,15 +342,17 @@
 .project-card {
   position: relative;
 
-  flex: 0 0 300px;
+  flex:
+    0 0
+    300px;
 
   min-height: 190px;
 
   padding: 23px;
 
-  box-sizing: border-box;
-
-  border: none;
+  border:
+    1px solid
+    rgba(35, 110, 140, 0.14);
 
   border-radius: 27px;
 
@@ -237,74 +367,58 @@
   background:
     linear-gradient(
       145deg,
-      rgba(248, 253, 255, 0.98),
-      rgba(224, 240, 248, 0.94)
+      rgba(248, 253, 255, 0.97),
+      rgba(218, 238, 247, 0.92)
     );
 
   box-shadow:
-    0 16px 35px rgba(0, 0, 0, 0.13),
-    0 4px 12px rgba(0, 0, 0, 0.06);
+    0 18px 40px
+    rgba(0, 0, 0, 0.18);
 
-  transform: translateY(0);
+  transform:
+    translateY(0);
 
   transition:
     transform 0.28s ease,
-    box-shadow 0.28s ease,
-    background 0.28s ease;
+    box-shadow 0.28s ease;
 }
 
-
-/* ============================================================
-   CARD HOVER
-   ============================================================ */
 
 .project-card:hover {
-  transform: translateY(-8px);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 1),
-      rgba(230, 247, 252, 0.98)
-    );
+  transform:
+    translateY(-8px);
 
   box-shadow:
-    0 23px 45px rgba(0, 0, 0, 0.17),
-    0 0 30px rgba(0, 220, 255, 0.13);
+    0 25px 50px
+    rgba(0, 0, 0, 0.23),
+    0 0 35px
+    rgba(0, 220, 255, 0.12);
 }
 
-
-/* ============================================================
-   CARD ACTIVE
-   ============================================================ */
 
 .project-card-active {
-  transform: translateY(-5px);
-
   box-shadow:
-    0 20px 42px rgba(0, 0, 0, 0.17),
-    0 0 0 1px rgba(0, 220, 255, 0.35),
-    0 0 38px rgba(0, 220, 255, 0.17);
-}
-
-
-.project-card-active:hover {
-  transform: translateY(-10px);
+    0 22px 48px
+    rgba(0, 0, 0, 0.2),
+    0 0 0 1px
+    rgba(0, 220, 255, 0.38),
+    0 0 38px
+    rgba(0, 220, 255, 0.16);
 }
 
 
 /* ============================================================
-   CARD GLOW
+   GLOW
    ============================================================ */
 
 .project-card-glow {
   position: absolute;
 
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
 
-  top: -80px;
-  right: -65px;
+  top: -85px;
+  right: -70px;
 
   border-radius: 50%;
 
@@ -312,29 +426,28 @@
     radial-gradient(
       circle,
       rgba(0, 225, 255, 0.25),
-      rgba(0, 225, 255, 0.06) 45%,
-      transparent 72%
+      transparent 70%
     );
 
-  filter: blur(4px);
+  filter:
+    blur(5px);
 
   pointer-events: none;
 
   transition:
-    transform 0.5s ease,
-    opacity 0.5s ease;
+    transform 0.5s ease;
 }
 
 
-.project-card:hover .project-card-glow {
-  transform: scale(1.4);
-
-  opacity: 1.2;
+.project-card:hover
+.project-card-glow {
+  transform:
+    scale(1.45);
 }
 
 
 /* ============================================================
-   CARD NUMBER
+   NUMBER
    ============================================================ */
 
 .project-card-number {
@@ -343,7 +456,8 @@
   top: 17px;
   right: 20px;
 
-  color: rgba(25, 53, 72, 0.2);
+  color:
+    rgba(25, 53, 72, 0.2);
 
   font-size: 10px;
 
@@ -354,7 +468,7 @@
 
 
 /* ============================================================
-   CARD CONTENT
+   CONTENT
    ============================================================ */
 
 .project-card-content {
@@ -370,17 +484,15 @@
 }
 
 
-/* ============================================================
-   PROJECT ICON
-   ============================================================ */
-
 .project-icon {
   display: flex;
 
   align-items: center;
   justify-content: center;
 
-  flex: 0 0 51px;
+  flex:
+    0 0
+    51px;
 
   width: 51px;
   height: 51px;
@@ -399,21 +511,10 @@
   font-size: 21px;
 
   box-shadow:
-    0 8px 20px rgba(0, 180, 255, 0.2);
-
-  transition:
-    transform 0.3s ease;
+    0 8px 22px
+    rgba(0, 180, 255, 0.22);
 }
 
-
-.project-card:hover .project-icon {
-  transform: rotate(-5deg) scale(1.07);
-}
-
-
-/* ============================================================
-   PROJECT INFORMATION
-   ============================================================ */
 
 .project-info {
   min-width: 0;
@@ -425,7 +526,8 @@
 
   overflow: hidden;
 
-  color: #152033;
+  color:
+    #152033;
 
   font-size: 17px;
 
@@ -440,30 +542,24 @@
 
 
 .project-info p {
-  margin: 7px 0 0;
+  margin:
+    7px
+    0
+    0;
 
   max-width: 190px;
 
-  overflow: hidden;
-
-  color: rgba(30, 48, 67, 0.52);
+  color:
+    rgba(30, 48, 67, 0.52);
 
   font-size: 11px;
 
   line-height: 1.45;
-
-  text-overflow: ellipsis;
-
-  display: -webkit-box;
-
-  -webkit-line-clamp: 2;
-
-  -webkit-box-orient: vertical;
 }
 
 
 /* ============================================================
-   CARD BOTTOM
+   BOTTOM
    ============================================================ */
 
 .project-card-bottom {
@@ -483,8 +579,10 @@
 }
 
 
-.project-card-bottom > span:first-child {
-  color: rgba(26, 48, 66, 0.34);
+.project-card-bottom
+> span:first-child {
+  color:
+    rgba(26, 48, 66, 0.34);
 
   font-size: 8px;
 
@@ -493,10 +591,6 @@
   letter-spacing: 0.13em;
 }
 
-
-/* ============================================================
-   ARROW
-   ============================================================ */
 
 .project-arrow {
   display: flex;
@@ -509,27 +603,28 @@
 
   border-radius: 50%;
 
-  color: #078fc7;
+  color:
+    #078fc7;
 
-  background: rgba(0, 200, 255, 0.09);
+  background:
+    rgba(0, 200, 255, 0.09);
 
   font-size: 16px;
 
   transition:
-    transform 0.3s ease,
-    background 0.3s ease;
+    transform 0.3s ease;
 }
 
 
-.project-card:hover .project-arrow {
-  transform: translateX(5px);
-
-  background: rgba(0, 200, 255, 0.17);
+.project-card:hover
+.project-arrow {
+  transform:
+    translateX(5px);
 }
 
 
 /* ============================================================
-   ACTIVE INDICATOR
+   ACTIVE
    ============================================================ */
 
 .project-active-indicator {
@@ -538,13 +633,17 @@
   left: 23px;
   top: 18px;
 
-  padding: 5px 8px;
+  padding:
+    5px
+    8px;
 
   border-radius: 8px;
 
-  color: #008eb5;
+  color:
+    #008eb5;
 
-  background: rgba(0, 220, 255, 0.1);
+  background:
+    rgba(0, 220, 255, 0.1);
 
   font-size: 7px;
 
@@ -555,12 +654,10 @@
 
 
 /* ============================================================
-   EMPTY STATE
+   EMPTY
    ============================================================ */
 
 .projects-empty {
-  position: relative;
-
   display: flex;
 
   flex-direction: column;
@@ -568,19 +665,19 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 320px;
+  min-height: 420px;
 
   text-align: center;
-
-  animation: projectsFadeIn 0.55s ease both;
 }
 
 
 .projects-empty-orb {
-  width: 70px;
-  height: 70px;
+  position: relative;
 
-  margin-bottom: 20px;
+  width: 82px;
+  height: 82px;
+
+  margin-bottom: 24px;
 
   border-radius: 50%;
 
@@ -588,62 +685,59 @@
     radial-gradient(
       circle at 35% 30%,
       rgba(255,255,255,0.95),
-      rgba(0,220,255,0.5) 30%,
-      rgba(40,80,255,0.35) 65%,
+      rgba(0,220,255,0.45) 30%,
+      rgba(35,85,255,0.3) 62%,
       transparent 75%
     );
 
   box-shadow:
-    0 0 35px rgba(0, 220, 255, 0.18);
+    0 0 45px
+    rgba(0, 220, 255, 0.2);
 
-  animation: emptyOrbFloat 4s ease-in-out infinite;
+  animation:
+    emptyOrbFloat
+    4s
+    ease-in-out
+    infinite;
 }
 
 
-.projects-empty h2 {
-  margin: 0;
+.projects-empty-orb-core {
+  position: absolute;
 
-  color: rgba(255,255,255,0.86);
+  left: 50%;
+  top: 50%;
 
-  font-size: 19px;
-}
+  width: 25px;
+  height: 25px;
 
+  transform:
+    translate(-50%, -50%);
 
-.projects-empty p {
-  margin-top: 8px;
+  border-radius: 50%;
 
-  color: rgba(225,235,255,0.4);
+  background:
+    rgba(230, 255, 255, 0.8);
 
-  font-size: 12px;
+  filter:
+    blur(7px);
+
+  box-shadow:
+    0 0 25px
+    rgba(0, 235, 255, 0.8);
 }
 
 
 @keyframes emptyOrbFloat {
   0%,
   100% {
-    transform: translateY(0);
+    transform:
+      translateY(0);
   }
 
   50% {
-    transform: translateY(-7px);
-  }
-}
-
-
-/* ============================================================
-   TABLET
-   ============================================================ */
-
-@media (max-width: 900px) {
-
-  .projects-panel {
-    padding: 34px 28px 45px;
-  }
-
-  .project-card {
-    flex-basis: 280px;
-
-    min-height: 185px;
+    transform:
+      translateY(-8px);
   }
 }
 
@@ -652,64 +746,37 @@
    MOBILE
    ============================================================ */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
   .projects-panel {
-    padding: 27px 17px 35px;
+    padding:
+      24px
+      17px
+      35px;
+  }
+
+  .projects-topbar {
+    margin-bottom: 30px;
   }
 
   .projects-header {
     align-items: center;
-
-    margin-bottom: 22px;
   }
 
   .projects-header h1 {
-    font-size: 25px;
+    font-size: 26px;
   }
 
   .projects-header p {
     font-size: 11px;
   }
 
-  .projects-count {
-    min-width: 60px;
-
-    padding: 9px 11px;
-
-    border-radius: 14px;
-  }
-
-  .projects-count span {
-    font-size: 18px;
-  }
-
-  .projects-count small {
-    font-size: 7px;
-  }
-
-  .projects-row {
-    gap: 15px;
-
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-
   .project-card {
-    flex-basis: 265px;
+    flex-basis: 270px;
 
-    min-height: 178px;
-
-    padding: 20px;
-
-    border-radius: 23px;
+    min-height: 180px;
   }
 
-  .project-card-bottom {
-    left: 20px;
-    right: 20px;
-    bottom: 17px;
-  }
 }
 
 
@@ -720,20 +787,16 @@
 @media (prefers-reduced-motion: reduce) {
 
   .projects-panel,
-  .projects-empty {
+  .projects-empty,
+  .projects-empty-orb {
     animation: none;
-  }
-
-  .projects-row {
-    scroll-behavior: auto;
   }
 
   .project-card,
-  .project-icon,
   .project-arrow,
   .project-card-glow,
-  .projects-empty-orb {
+  .projects-back-button {
     transition: none;
-    animation: none;
   }
+
 }
