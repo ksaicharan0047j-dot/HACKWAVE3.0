@@ -1,1709 +1,975 @@
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background: #01070b;
+:root {
+  --vex-primary: #00eaff;
+  --vex-secondary: #0077ff;
+  --vex-background: #020b12;
+  --vex-panel: #071923;
 }
 
 * {
   box-sizing: border-box;
 }
 
-button,
-input {
-  font: inherit;
+body {
+  margin: 0;
+  background: var(--vex-background);
+  color: white;
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+  overflow-x: hidden;
 }
 
-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-
-/* ============================================================
-   HOME
-   ============================================================ */
-
-.home-page {
-  --voice: 0;
-  --agent-voice: 0;
-  --sound: 0;
-
-  --bass: 0;
-  --mid: 0;
-  --treble: 0;
-
-  --spin: 0;
-  --twist: 0;
-
-  --rotation: 0deg;
-  --twist-angle: 0deg;
-  --pulse: 0;
-
+.jarvis-home {
   position: relative;
 
+  min-height: 100vh;
   width: 100%;
-  height: 100vh;
 
   overflow: hidden;
 
-  isolation: isolate;
-
-  color: white;
-
   background:
     radial-gradient(
-      ellipse at 50% 48%,
-      #071d28 0%,
-      #031019 32%,
-      #01070d 68%,
-      #010308 100%
-    );
-}
-
-
-/* ============================================================
-   BACKGROUND
-   ============================================================ */
-
-.home-cosmos {
-  position: absolute;
-
-  inset: -50%;
-
-  z-index: -20;
-
-  background:
-    radial-gradient(
-      ellipse at 50% 48%,
-      rgba(0, 221, 255, 0.09),
-      transparent 32%
+      circle at 50% 43%,
+      color-mix(
+        in srgb,
+        var(--vex-primary) 8%,
+        transparent
+      ),
+      transparent 34%
     ),
-    radial-gradient(
-      ellipse at 20% 70%,
-      rgba(0, 100, 160, 0.06),
-      transparent 42%
-    ),
-    radial-gradient(
-      ellipse at 80% 20%,
-      rgba(0, 180, 220, 0.04),
-      transparent 38%
-    );
-
-  filter: blur(70px);
-
-  animation:
-    universe-drift
-    80s
-    ease-in-out
-    infinite alternate;
-}
-
-@keyframes universe-drift {
-  from {
-    transform:
-      scale(1)
-      rotate(0deg);
-  }
-
-  to {
-    transform:
-      scale(1.05)
-      rotate(8deg);
-  }
-}
-
-.home-stars {
-  position: absolute;
-
-  inset: 0;
-
-  z-index: -15;
-
-  opacity: 0.55;
-
-  background-image:
-    radial-gradient(
-      circle at 12% 18%,
-      rgba(190, 240, 255, 0.65) 0 1px,
-      transparent 1.5px
-    ),
-    radial-gradient(
-      circle at 83% 21%,
-      rgba(150, 230, 255, 0.55) 0 1px,
-      transparent 1.5px
-    ),
-    radial-gradient(
-      circle at 72% 77%,
-      rgba(180, 245, 255, 0.42) 0 1px,
-      transparent 1.5px
-    ),
-    radial-gradient(
-      circle at 25% 81%,
-      rgba(120, 220, 255, 0.38) 0 1px,
-      transparent 1.5px
-    );
-}
-
-.home-nebula {
-  position: absolute;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  filter: blur(80px);
-
-  z-index: -10;
-}
-
-.nebula-one {
-  width: 600px;
-  height: 220px;
-
-  left: -250px;
-  top: 15%;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 204, 255, 0.07),
-      transparent 70%
-    );
-
-  transform: rotate(-20deg);
-}
-
-.nebula-two {
-  width: 600px;
-  height: 240px;
-
-  right: -250px;
-  bottom: 10%;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 180, 230, 0.055),
-      transparent 70%
-    );
-
-  transform: rotate(22deg);
-}
-
-
-/* ============================================================
-   ORB STAGE
-   ============================================================ */
-
-.jarvis-orb-stage {
-  position: absolute;
-
-  left: 50%;
-  top: 45%;
-
-  width: 650px;
-  height: 650px;
-
-  transform:
-    translate(-50%, -50%);
-
-  pointer-events: none;
-
-  z-index: 5;
-}
-
-
-/* ============================================================
-   PARTICLES
-   ============================================================ */
-
-.orb-particles {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  width: 1px;
-  height: 1px;
-
-  transform:
-    translate(-50%, -50%);
-
-  pointer-events: none;
-
-  z-index: 10;
-}
-
-.orb-particle {
-  position: absolute;
-
-  left: 0;
-  top: 0;
-
-  width: 3px;
-  height: 3px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(210, 255, 255, 1) 0%,
-      rgba(0, 235, 255, 0.95) 32%,
-      rgba(0, 125, 190, 0.3) 70%,
-      transparent 100%
-    );
-
-  box-shadow:
-    0 0 8px
-    rgba(0, 225, 255, 0.7);
-
-  will-change:
-    transform,
-    opacity;
-}
-
-
-/* ============================================================
-   MAIN ORB CONTAINER
-   ============================================================ */
-
-.jarvis-orb {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  width: 430px;
-  height: 420px;
-
-  transform:
-    translate(-50%, -50%);
-
-  isolation: isolate;
-
-  will-change:
-    transform;
-}
-
-
-/* ============================================================
-   ATMOSPHERIC MIST
-   ============================================================ */
-
-.orb-mist {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  transform:
-    translate(-50%, -50%);
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  mix-blend-mode: screen;
-
-  will-change:
-    transform,
-    opacity;
-}
-
-.mist-one {
-  width: 470px;
-  height: 410px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 235, 255, 0.13),
-      rgba(0, 130, 190, 0.06),
-      transparent 70%
-    );
-
-  filter: blur(30px);
-
-  animation:
-    atmospheric-spin-one
-    15s
-    ease-in-out
-    infinite alternate;
-}
-
-.mist-two {
-  width: 520px;
-  height: 340px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(70, 240, 255, 0.075),
-      rgba(0, 100, 180, 0.04),
-      transparent 70%
-    );
-
-  filter: blur(45px);
-
-  animation:
-    atmospheric-spin-two
-    19s
-    ease-in-out
-    infinite alternate;
-}
-
-.mist-three {
-  width: 350px;
-  height: 510px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 210, 255, 0.065),
-      rgba(0, 70, 150, 0.025),
-      transparent 70%
-    );
-
-  filter: blur(40px);
-
-  animation:
-    atmospheric-spin-three
-    23s
-    ease-in-out
-    infinite alternate;
-}
-
-@keyframes atmospheric-spin-one {
-  from {
-    transform:
-      translate(-50%, -50%)
-      rotate(-8deg)
-      scale(0.94);
-  }
-
-  to {
-    transform:
-      translate(-50%, -50%)
-      rotate(14deg)
-      scale(1.08);
-  }
-}
-
-@keyframes atmospheric-spin-two {
-  from {
-    transform:
-      translate(-50%, -50%)
-      rotate(13deg)
-      scale(0.9);
-  }
-
-  to {
-    transform:
-      translate(-50%, -50%)
-      rotate(-15deg)
-      scale(1.08);
-  }
-}
-
-@keyframes atmospheric-spin-three {
-  from {
-    transform:
-      translate(-50%, -50%)
-      rotate(6deg)
-      scale(0.92);
-  }
-
-  to {
-    transform:
-      translate(-50%, -50%)
-      rotate(-11deg)
-      scale(1.07);
-  }
-}
-
-
-/* ============================================================
-   GRAVITY SMOKE
-   ============================================================ */
-
-.orb-gravity-smoke {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  mix-blend-mode: screen;
-
-  filter: blur(17px);
-
-  opacity:
-    calc(
-      0.5 +
-      var(--sound) * 0.4
-    );
-
-  will-change:
-    transform;
-}
-
-.gravity-smoke-one {
-  width: 250px;
-  height: 75px;
-
-  margin-left: -225px;
-  margin-top: -50px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 231, 255, 0.16),
-      rgba(0, 135, 200, 0.05),
-      transparent 72%
-    );
-
-  animation:
-    gravity-one
-    8s
-    ease-in-out
-    infinite;
-}
-
-.gravity-smoke-two {
-  width: 280px;
-  height: 80px;
-
-  margin-left: -50px;
-  margin-top: 40px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(70, 241, 255, 0.12),
-      rgba(0, 100, 180, 0.05),
-      transparent 72%
-    );
-
-  animation:
-    gravity-two
-    10s
-    ease-in-out
-    infinite;
-}
-
-.gravity-smoke-three {
-  width: 210px;
-  height: 100px;
-
-  margin-left: -95px;
-  margin-top: -170px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 205, 255, 0.13),
-      rgba(0, 90, 180, 0.04),
-      transparent 72%
-    );
-
-  animation:
-    gravity-three
-    12s
-    ease-in-out
-    infinite;
-}
-
-@keyframes gravity-one {
-  0% {
-    transform:
-      translate(-150px, 15px)
-      rotate(-15deg)
-      scale(0.75);
-  }
-
-  50% {
-    transform:
-      translate(-40px, -8px)
-      rotate(4deg)
-      scale(1);
-  }
-
-  100% {
-    transform:
-      translate(20px, 0)
-      rotate(12deg)
-      scale(0.7);
-  }
-}
-
-@keyframes gravity-two {
-  0% {
-    transform:
-      translate(140px, 15px)
-      rotate(15deg)
-      scale(0.7);
-  }
-
-  50% {
-    transform:
-      translate(35px, -10px)
-      rotate(-5deg)
-      scale(1);
-  }
-
-  100% {
-    transform:
-      translate(-15px, 5px)
-      rotate(-12deg)
-      scale(0.75);
-  }
-}
-
-@keyframes gravity-three {
-  0% {
-    transform:
-      translate(20px, -120px)
-      rotate(8deg)
-      scale(0.7);
-  }
-
-  50% {
-    transform:
-      translate(-5px, -30px)
-      rotate(-8deg)
-      scale(1);
-  }
-
-  100% {
-    transform:
-      translate(10px, 10px)
-      rotate(12deg)
-      scale(0.72);
-  }
-}
-
-
-/* ============================================================
-   OUTER GLOW
-   ============================================================ */
-
-.orb-glow {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  width: 410px;
-  height: 390px;
-
-  transform:
-    translate(-50%, -50%)
-    scale(
-      calc(
-        1 +
-        var(--sound) * 0.08
-      )
-    );
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 230, 255, 0.2),
-      rgba(0, 135, 200, 0.09) 43%,
-      transparent 73%
-    );
-
-  filter: blur(27px);
-
-  opacity:
-    calc(
-      0.65 +
-      var(--sound) * 0.35
-    );
-
-  will-change:
-    transform,
-    opacity;
-}
-
-
-/* ============================================================
-   LIQUID BODY
-   ============================================================ */
-
-.orb-body {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  width: 335px;
-  height: 335px;
-
-  transform:
-    translate(-50%, -50%)
-    rotate(var(--rotation))
-    scale(
-      calc(
-        0.94 +
-        var(--sound) * 0.10
-      )
-    );
-
-  overflow: hidden;
-
-  /*
-   * Soft organic silhouette.
-   */
-  border-radius:
-    48% 52% 47% 53%
-    /
-    52% 45% 55% 48%;
-
-  background:
-    radial-gradient(
-      ellipse at 30% 20%,
-      rgba(240, 255, 255, 0.98) 0%,
-      rgba(105, 246, 255, 0.98) 8%,
-      rgba(0, 224, 250, 0.97) 20%,
-      rgba(0, 166, 215, 0.94) 38%,
-      rgba(0, 82, 145, 0.92) 60%,
-      rgba(0, 27, 58, 0.98) 82%,
-      rgba(0, 9, 22, 1) 100%
-    );
-
-  box-shadow:
-    0 0 25px
-      rgba(0, 235, 255, 0.48),
-
-    0 0 65px
-      rgba(0, 175, 235, 0.28),
-
-    0 0 125px
-      rgba(0, 90, 180, 0.2);
-
-  will-change:
-    transform,
-    border-radius,
-    box-shadow;
-
-  /*
-   * Constant organic deformation.
-   */
-  animation:
-    liquid-body-morph
-    7s
-    ease-in-out
-    infinite;
+    var(--vex-background);
 
   transition:
-    box-shadow 70ms linear;
+    background 0.5s ease,
+    color 0.5s ease;
 }
 
+/* =========================
+   HEADER
+========================= */
 
-/* ============================================================
-   CONSTANT LIQUID MORPH
-   ============================================================ */
+.jarvis-header {
+  position: relative;
 
-@keyframes liquid-body-morph {
-  0% {
-    border-radius:
-      48% 52% 47% 53%
-      /
-      52% 45% 55% 48%;
+  z-index: 100;
 
-    transform:
-      translate(-50%, -50%)
-      rotate(var(--rotation))
-      scale(
-        calc(
-          0.94 +
-          var(--sound) * 0.10
-        )
-      );
-  }
+  width: 100%;
 
-  20% {
-    border-radius:
-      55% 45% 51% 49%
-      /
-      44% 58% 42% 56%;
-
-    transform:
-      translate(-50%, -50%)
-      rotate(
-        calc(
-          var(--rotation) + 7deg
-        )
-      )
-      scale(
-        calc(
-          0.97 +
-          var(--sound) * 0.13
-        )
-      );
-  }
-
-  40% {
-    border-radius:
-      43% 57% 54% 46%
-      /
-      57% 43% 52% 48%;
-
-    transform:
-      translate(-50%, -50%)
-      rotate(
-        calc(
-          var(--rotation) - 5deg
-        )
-      )
-      scale(
-        calc(
-          0.95 +
-          var(--sound) * 0.15
-        )
-      );
-  }
-
-  60% {
-    border-radius:
-      58% 42% 45% 55%
-      /
-      47% 53% 57% 43%;
-
-    transform:
-      translate(-50%, -50%)
-      rotate(
-        calc(
-          var(--rotation) + 10deg
-        )
-      )
-      scale(
-        calc(
-          0.98 +
-          var(--sound) * 0.14
-        )
-      );
-  }
-
-  80% {
-    border-radius:
-      46% 54% 59% 41%
-      /
-      54% 46% 44% 56%;
-
-    transform:
-      translate(-50%, -50%)
-      rotate(
-        calc(
-          var(--rotation) - 8deg
-        )
-      )
-      scale(
-        calc(
-          0.95 +
-          var(--sound) * 0.12
-        )
-      );
-  }
-
-  100% {
-    border-radius:
-      48% 52% 47% 53%
-      /
-      52% 45% 55% 48%;
-
-    transform:
-      translate(-50%, -50%)
-      rotate(var(--rotation))
-      scale(
-        calc(
-          0.94 +
-          var(--sound) * 0.10
-        )
-      );
-  }
-}
-
-
-/* ============================================================
-   INWARD VORTEX
-   ============================================================ */
-
-.orb-vortex {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  mix-blend-mode: screen;
-
-  transform-origin:
-    center;
-
-  will-change:
-    transform;
-}
-
-
-/*
- * Wide rotating liquid current.
- */
-
-.vortex-one {
-  width: 300px;
-  height: 145px;
-
-  margin-left: -150px;
-  margin-top: -72px;
-
-  background:
-    radial-gradient(
-      ellipse at center,
-      transparent 30%,
-      rgba(210, 255, 255, 0.13) 42%,
-      rgba(0, 225, 255, 0.14) 55%,
-      transparent 73%
-    );
-
-  filter:
-    blur(8px);
-
-  animation:
-    vortex-inward-one
-    5.5s
-    linear
-    infinite;
-}
-
-
-/*
- * Counter-rotating current.
- */
-
-.vortex-two {
-  width: 255px;
-  height: 115px;
-
-  margin-left: -127px;
-  margin-top: -57px;
-
-  background:
-    radial-gradient(
-      ellipse at center,
-      transparent 25%,
-      rgba(160, 255, 255, 0.15) 43%,
-      rgba(0, 185, 240, 0.16) 57%,
-      transparent 75%
-    );
-
-  filter:
-    blur(10px);
-
-  animation:
-    vortex-inward-two
-    4.2s
-    linear
-    infinite;
-}
-
-
-/*
- * Tight central vortex.
- */
-
-.vortex-three {
-  width: 155px;
-  height: 70px;
-
-  margin-left: -77px;
-  margin-top: -35px;
-
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(245, 255, 255, 0.35),
-      rgba(50, 245, 255, 0.17) 28%,
-      rgba(0, 190, 240, 0.12) 50%,
-      transparent 75%
-    );
-
-  filter:
-    blur(7px);
-
-  animation:
-    vortex-inward-three
-    3s
-    linear
-    infinite;
-}
-
-
-@keyframes vortex-inward-one {
-  0% {
-    transform:
-      rotate(0deg)
-      scaleX(1)
-      scaleY(0.85);
-  }
-
-  50% {
-    transform:
-      rotate(180deg)
-      scaleX(0.72)
-      scaleY(1.15);
-  }
-
-  100% {
-    transform:
-      rotate(360deg)
-      scaleX(1)
-      scaleY(0.85);
-  }
-}
-
-
-@keyframes vortex-inward-two {
-  0% {
-    transform:
-      rotate(360deg)
-      scaleX(0.78)
-      scaleY(1.05);
-  }
-
-  50% {
-    transform:
-      rotate(180deg)
-      scaleX(1.05)
-      scaleY(0.72);
-  }
-
-  100% {
-    transform:
-      rotate(0deg)
-      scaleX(0.78)
-      scaleY(1.05);
-  }
-}
-
-
-@keyframes vortex-inward-three {
-  0% {
-    transform:
-      rotate(0deg)
-      scale(1);
-  }
-
-  35% {
-    transform:
-      rotate(130deg)
-      scale(
-        calc(
-          0.65 +
-          var(--sound) * 0.2
-        )
-      );
-  }
-
-  70% {
-    transform:
-      rotate(250deg)
-      scale(1.12);
-  }
-
-  100% {
-    transform:
-      rotate(360deg)
-      scale(1);
-  }
-}
-
-
-/* ============================================================
-   INTERNAL LIQUID
-   ============================================================ */
-
-.orb-liquid {
-  position: absolute;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  mix-blend-mode: screen;
-
-  will-change:
-    transform;
-}
-
-.liquid-one {
-  width: 230px;
-  height: 110px;
-
-  left: -35px;
-  top: 35px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(230, 255, 255, 0.31),
-      rgba(0, 235, 255, 0.12),
-      transparent 72%
-    );
-
-  filter: blur(9px);
-
-  animation:
-    liquid-one-flow
-    5s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-.liquid-two {
-  width: 235px;
-  height: 100px;
-
-  right: -45px;
-  bottom: 35px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(0, 245, 255, 0.28),
-      rgba(0, 110, 200, 0.12),
-      transparent 70%
-    );
-
-  filter: blur(9px);
-
-  animation:
-    liquid-two-flow
-    6s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-.liquid-three {
-  width: 135px;
-  height: 230px;
-
-  left: 100px;
-  top: 52px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(145, 250, 255, 0.16),
-      rgba(0, 100, 190, 0.07),
-      transparent 72%
-    );
-
-  filter: blur(15px);
-
-  animation:
-    liquid-three-flow
-    7s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-
-@keyframes liquid-one-flow {
-  from {
-    transform:
-      translate(
-        calc(
-          -15px -
-          var(--sound) * 18px
-        ),
-        -8px
-      )
-      rotate(-18deg)
-      scale(0.8, 1);
-  }
-
-  to {
-    transform:
-      translate(
-        calc(
-          35px +
-          var(--sound) * 28px
-        ),
-        13px
-      )
-      rotate(17deg)
-      scale(1.2, 0.78);
-  }
-}
-
-
-@keyframes liquid-two-flow {
-  from {
-    transform:
-      translate(
-        calc(
-          20px +
-          var(--sound) * 15px
-        ),
-        5px
-      )
-      rotate(17deg)
-      scale(0.82, 1);
-  }
-
-  to {
-    transform:
-      translate(
-        calc(
-          -30px -
-          var(--sound) * 30px
-        ),
-        -14px
-      )
-      rotate(-18deg)
-      scale(1.16, 0.8);
-  }
-}
-
-
-@keyframes liquid-three-flow {
-  from {
-    transform:
-      translateY(-18px)
-      rotate(-20deg)
-      scale(0.82, 1.05);
-  }
-
-  to {
-    transform:
-      translateY(20px)
-      rotate(21deg)
-      scale(1.08, 0.82);
-  }
-}
-
-
-/* ============================================================
-   INTERNAL SMOKE
-   ============================================================ */
-
-.orb-smoke {
-  position: absolute;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-
-  mix-blend-mode: screen;
-
-  filter: blur(10px);
-}
-
-.smoke-one {
-  width: 180px;
-  height: 62px;
-
-  left: 8px;
-  top: 100px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(220, 255, 255, 0.18),
-      rgba(0, 210, 240, 0.06),
-      transparent 70%
-    );
-
-  animation:
-    smoke-one
-    6s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-.smoke-two {
-  width: 150px;
-  height: 75px;
-
-  right: 5px;
-  top: 60px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(139, 246, 255, 0.16),
-      rgba(0, 194, 230, 0.05),
-      transparent 70%
-    );
-
-  animation:
-    smoke-two
-    8s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-.smoke-three {
-  width: 185px;
-  height: 50px;
-
-  left: 65px;
-  bottom: 38px;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(168, 248, 255, 0.14),
-      rgba(0, 105, 180, 0.05),
-      transparent 72%
-    );
-
-  animation:
-    smoke-three
-    10s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-@keyframes smoke-one {
-  from {
-    transform:
-      translateX(-25px)
-      rotate(-10deg);
-  }
-
-  to {
-    transform:
-      translateX(28px)
-      rotate(12deg);
-  }
-}
-
-@keyframes smoke-two {
-  from {
-    transform:
-      translateX(20px)
-      rotate(12deg);
-  }
-
-  to {
-    transform:
-      translateX(-25px)
-      rotate(-11deg);
-  }
-}
-
-@keyframes smoke-three {
-  from {
-    transform:
-      translateX(20px)
-      scaleX(0.8);
-  }
-
-  to {
-    transform:
-      translateX(-25px)
-      scaleX(1.18);
-  }
-}
-
-
-/* ============================================================
-   HIGHLIGHT
-   ============================================================ */
-
-.orb-highlight {
-  position: absolute;
-
-  width: 115px;
-  height: 75px;
-
-  left: 30px;
-  top: 25px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(255, 255, 255, 0.78),
-      rgba(190, 251, 255, 0.28),
-      transparent 72%
-    );
-
-  filter: blur(8px);
-
-  mix-blend-mode:
-    screen;
-
-  animation:
-    highlight
-    6s
-    ease-in-out
-    infinite
-    alternate;
-}
-
-@keyframes highlight {
-  from {
-    transform:
-      translate(0, 0)
-      scale(0.85);
-  }
-
-  to {
-    transform:
-      translate(25px, 12px)
-      scale(1.12);
-  }
-}
-
-
-/* ============================================================
-   CENTRAL CORE
-   ============================================================ */
-
-.orb-core {
-  position: absolute;
-
-  width: 58px;
-  height: 58px;
-
-  left: 50%;
-  top: 50%;
-
-  transform:
-    translate(-50%, -50%)
-    scale(
-      calc(
-        0.82 +
-        var(--sound) * 0.5
-      )
-    );
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(185, 255, 255, 0.6) 14%,
-      rgba(70, 242, 255, 0.25) 32%,
-      rgba(0, 190, 240, 0.08) 55%,
-      transparent 78%
-    );
-
-  filter:
-    blur(
-      calc(
-        5px +
-        var(--sound) * 4px
-      )
-    );
-
-  opacity:
-    calc(
-      0.5 +
-      var(--sound) * 0.5
-    );
-
-  box-shadow:
-    0 0 30px
-    rgba(0, 235, 255, 0.4);
-
-  will-change:
-    transform,
-    opacity;
-}
-
-
-/* ============================================================
-   STATUS
-   ============================================================ */
-
-.orb-status {
-  position: absolute;
-
-  left: 50%;
-  bottom: 7%;
-
-  transform:
-    translateX(-50%);
+  min-height: 90px;
 
   display: flex;
 
   align-items: center;
 
-  gap: 7px;
+  justify-content: space-between;
 
-  color:
-    rgba(170, 229, 243, 0.27);
+  padding: 18px 30px;
 
-  font-size: 8px;
+  border-bottom:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--vex-primary) 12%,
+      transparent
+    );
 
-  letter-spacing: 0.22em;
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-background) 82%,
+      transparent
+    );
+
+  backdrop-filter: blur(12px);
 }
 
-.orb-status span {
-  width: 4px;
-  height: 4px;
+/* =========================
+   PFP
+========================= */
+
+.profile-container {
+  position: relative;
+}
+
+.pfp-button {
+  width: 62px;
+  height: 62px;
+
+  padding: 4px;
+
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--vex-primary) 45%,
+      transparent
+    );
 
   border-radius: 50%;
 
   background:
-    rgba(92, 233, 255, 0.75);
+    color-mix(
+      in srgb,
+      var(--vex-primary) 8%,
+      transparent
+    );
+
+  color: var(--vex-primary);
+
+  cursor: pointer;
+
+  transition:
+    0.25s ease;
 
   box-shadow:
-    0 0 10px
-    rgba(0, 220, 255, 0.8);
+    0 0 20px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 12%,
+      transparent
+    );
 }
 
+.pfp-button:hover,
+.pfp-button.active {
+  background:
+    color-mix(
+      in srgb,
+      white 72%,
+      var(--vex-primary)
+    );
 
-/* ============================================================
-   PROFILE
-   ============================================================ */
+  border-color: white;
 
-.profile-area {
-  position: absolute;
+  color: #031018;
 
-  left: 26px;
-  top: 24px;
+  box-shadow:
+    0 0 35px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 60%,
+      transparent
+    );
 
-  z-index: 100;
+  transform: scale(1.07);
 }
 
-.profile-button {
-  width: 46px;
-  height: 46px;
+.pfp-ring {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
 
   border:
     1px solid
-    rgba(125, 224, 255, 0.15);
+    color-mix(
+      in srgb,
+      var(--vex-primary) 55%,
+      transparent
+    );
 
   border-radius: 50%;
-
-  background:
-    rgba(5, 17, 26, 0.42);
-
-  color:
-    rgba(220, 250, 255, 0.7);
-
-  cursor: pointer;
 }
+
+.pfp-face {
+  font-size: 25px;
+
+  font-weight: 800;
+
+  letter-spacing: 0;
+}
+
+/* =========================
+   PROFILE MENU
+========================= */
 
 .profile-menu {
   position: absolute;
 
-  top: 57px;
+  top: 74px;
   left: 0;
 
-  width: 190px;
+  width: 270px;
 
-  padding: 12px;
-
-  background:
-    rgba(3, 12, 20, 0.92);
+  padding: 18px;
 
   border:
     1px solid
-    rgba(105, 220, 250, 0.14);
+    color-mix(
+      in srgb,
+      var(--vex-primary) 35%,
+      transparent
+    );
 
-  backdrop-filter:
-    blur(22px);
+  border-radius: 18px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-panel) 94%,
+      black
+    );
 
   box-shadow:
-    0 25px 80px
-    rgba(0, 0, 0, 0.5);
+    0 20px 70px rgba(0, 0, 0, 0.7),
+    0 0 40px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 12%,
+      transparent
+    );
+
+  backdrop-filter: blur(25px);
+
+  animation: menuIn 0.2s ease-out;
 }
 
-.profile-menu-title {
-  padding:
-    5px
-    8px
-    12px;
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
 
-  color:
-    rgba(140, 220, 240, 0.35);
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profile-menu-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 5px 3px 12px;
+}
+
+.menu-pfp {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    var(--vex-primary);
+
+  color: #001018;
+
+  font-size: 20px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 0 20px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 45%,
+      transparent
+    );
+}
+
+.menu-name {
+  font-size: 15px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+}
+
+.menu-status {
+  margin-top: 4px;
+
+  color: var(--vex-primary);
 
   font-size: 9px;
 
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
 }
 
-.profile-menu button {
-  display: block;
+.menu-divider {
+  height: 1px;
 
+  margin: 5px 0 10px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-primary) 14%,
+      transparent
+    );
+}
+
+.profile-menu-button {
   width: 100%;
 
-  padding:
-    10px
-    8px;
+  display: flex;
 
-  border: 0;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 14px 12px;
+
+  margin-top: 5px;
+
+  border: 1px solid transparent;
+
+  border-radius: 10px;
 
   background: transparent;
 
   color:
-    rgba(220, 245, 255, 0.58);
+    rgba(230, 250, 255, 0.65);
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
 
   text-align: left;
 
   cursor: pointer;
+
+  transition: 0.2s;
 }
 
-.profile-menu button:hover {
+.profile-menu-button span {
+  width: 22px;
+
+  color: var(--vex-primary);
+
+  font-size: 18px;
+
+  text-align: center;
+}
+
+.profile-menu-button:hover {
   background:
-    rgba(90, 220, 255, 0.05);
+    color-mix(
+      in srgb,
+      white 12%,
+      var(--vex-primary)
+    );
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--vex-primary) 35%,
+      transparent
+    );
+
+  color: white;
+
+  transform: translateX(3px);
+}
+
+/* =========================
+   BLUR WHEN PFP OPEN
+========================= */
+
+.profile-blur {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 70;
+
+  background: rgba(0, 0, 0, 0.15);
+
+  backdrop-filter: blur(12px);
+
+  animation: blurIn 0.25s ease;
+}
+
+@keyframes blurIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Keep header/profile above blur */
+
+.jarvis-header {
+  z-index: 100;
+}
+
+/* =========================
+   BRAND
+========================= */
+
+.jarvis-brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+}
+
+.brand-dot {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: var(--vex-primary);
+
+  box-shadow:
+    0 0 18px var(--vex-primary);
+}
+
+.brand-title {
+  font-size: 23px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.18em;
 
   color: white;
 }
 
+.brand-subtitle {
+  margin-top: 3px;
 
-/* ============================================================
-   PROJECTS
-   ============================================================ */
+  font-size: 9px;
 
-.projects-launcher {
-  position: absolute;
+  letter-spacing: 0.2em;
 
-  right: 26px;
-  top: 24px;
+  color:
+    color-mix(
+      in srgb,
+      var(--vex-primary) 55%,
+      white
+    );
+}
 
-  z-index: 100;
+/* =========================
+   STATUS
+========================= */
 
-  height: 40px;
-
-  padding:
-    0
-    13px;
-
+.header-status {
   display: flex;
 
   align-items: center;
 
   gap: 8px;
 
-  border:
-    1px solid
-    rgba(125, 224, 255, 0.11);
+  font-size: 11px;
 
-  background:
-    rgba(5, 16, 25, 0.3);
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
 
   color:
-    rgba(218, 246, 255, 0.5);
-
-  cursor: pointer;
+    color-mix(
+      in srgb,
+      var(--vex-primary) 65%,
+      white
+    );
 }
 
-.projects-launcher span {
-  font-size: 15px;
+.status-indicator {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: var(--vex-primary);
+
+  box-shadow:
+    0 0 14px var(--vex-primary);
+
+  animation: statusPulse 1.6s infinite;
 }
 
+@keyframes statusPulse {
+  50% {
+    opacity: 0.35;
+  }
+}
 
-/* ============================================================
-   BRAND
-   ============================================================ */
+/* =========================
+   MAIN
+========================= */
 
-.home-brand {
+.jarvis-main {
+  position: relative;
+
+  z-index: 10;
+
+  min-height: calc(100vh - 220px);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding-bottom: 30px;
+}
+
+/* =========================
+   ORB
+========================= */
+
+.jarvis-orb {
+  --voice: 0;
+
+  position: relative;
+
+  width: min(430px, 65vw);
+  aspect-ratio: 1;
+
+  transition:
+    filter 0.4s ease;
+}
+
+.jarvis-orb::before {
+  content: "";
+
   position: absolute;
 
-  left: 50%;
-  top: 27px;
+  inset: 10%;
 
-  z-index: 30;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      color-mix(
+        in srgb,
+        var(--vex-primary) 24%,
+        transparent
+      ),
+      transparent 68%
+    );
+
+  filter: blur(35px);
 
   transform:
-    translateX(-50%);
+    scale(calc(1 + var(--voice) * 0.25));
 
-  text-align: center;
+  transition: transform 0.12s linear;
+}
+
+.orb-body {
+  position: absolute;
+
+  inset: 15%;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      white 0%,
+      var(--vex-primary) 7%,
+      var(--vex-secondary) 30%,
+      #030c13 72%
+    );
+
+  box-shadow:
+    inset -30px -35px 60px rgba(0, 0, 0, 0.8),
+    inset 20px 15px 40px rgba(255, 255, 255, 0.08),
+    0 0 45px
+      color-mix(
+        in srgb,
+        var(--vex-primary) 40%,
+        transparent
+      ),
+    0 0 110px
+      color-mix(
+        in srgb,
+        var(--vex-primary) 18%,
+        transparent
+      );
+
+  transform:
+    scale(calc(1 + var(--voice) * 0.035));
+
+  transition:
+    transform 0.12s linear,
+    background 0.5s ease,
+    box-shadow 0.5s ease;
+}
+
+.orb-liquid,
+.orb-smoke,
+.orb-mist {
+  position: absolute;
+
+  border-radius: 50%;
 
   pointer-events: none;
 }
 
-.brand-kicker {
-  color:
-    rgba(145, 219, 239, 0.28);
+.orb-liquid {
+  filter: blur(10px);
 
-  font-size: 8px;
+  mix-blend-mode: screen;
 
-  letter-spacing: 0.32em;
+  background:
+    var(--vex-primary);
 }
 
-.brand-name {
-  margin-top: 5px;
+.orb-liquid-1 {
+  width: 55%;
+  height: 30%;
 
-  color:
-    rgba(228, 250, 255, 0.63);
+  top: 20%;
+  left: -8%;
 
-  font-size: 15px;
+  opacity: 0.6;
 
-  letter-spacing: 0.3em;
+  animation: liquidOne 5s ease-in-out infinite;
 }
 
+.orb-liquid-2 {
+  width: 60%;
+  height: 35%;
 
-/* ============================================================
-   COMMAND
-   ============================================================ */
+  right: -15%;
+  bottom: 15%;
 
-.command-area {
-  position: absolute;
+  opacity: 0.5;
 
-  left: 50%;
-  bottom: 58px;
+  animation: liquidTwo 6s ease-in-out infinite;
+}
 
-  width:
-    min(
-      500px,
-      calc(100% - 30px)
+.orb-liquid-3 {
+  width: 45%;
+  height: 45%;
+
+  left: 28%;
+  bottom: -15%;
+
+  opacity: 0.3;
+
+  animation: liquidThree 7s ease-in-out infinite;
+}
+
+@keyframes liquidOne {
+  50% {
+    transform: translate(35%, 25%) rotate(20deg);
+  }
+}
+
+@keyframes liquidTwo {
+  50% {
+    transform: translate(-25%, -25%) rotate(-25deg);
+  }
+}
+
+@keyframes liquidThree {
+  50% {
+    transform: translate(10%, -20%) scale(1.2);
+  }
+}
+
+.orb-smoke {
+  width: 45%;
+  height: 45%;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-secondary) 60%,
+      transparent
     );
 
-  height: 44px;
+  filter: blur(25px);
 
-  transform:
-    translateX(-50%);
+  opacity: 0.3;
+}
 
-  z-index: 40;
+.orb-smoke-1 {
+  left: 5%;
+  top: 5%;
+
+  animation: smokeOne 8s infinite ease-in-out;
+}
+
+.orb-smoke-2 {
+  right: 0;
+  top: 30%;
+
+  animation: smokeTwo 9s infinite ease-in-out;
+}
+
+.orb-smoke-3 {
+  bottom: 0;
+  left: 25%;
+
+  animation: smokeThree 7s infinite ease-in-out;
+}
+
+@keyframes smokeOne {
+  50% {
+    transform: translate(40%, 30%) scale(1.3);
+  }
+}
+
+@keyframes smokeTwo {
+  50% {
+    transform: translate(-30%, -20%) scale(1.2);
+  }
+}
+
+@keyframes smokeThree {
+  50% {
+    transform: translate(20%, -25%) scale(1.3);
+  }
+}
+
+.orb-highlight {
+  position: absolute;
+
+  width: 30%;
+  height: 20%;
+
+  left: 19%;
+  top: 15%;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.3);
+
+  filter: blur(15px);
+
+  transform: rotate(-25deg);
+}
+
+.orb-core {
+  position: absolute;
+
+  inset: 35%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      white,
+      var(--vex-primary) 25%,
+      transparent 72%
+    );
+
+  filter: blur(2px);
+
+  animation: corePulse 2s infinite ease-in-out;
+}
+
+@keyframes corePulse {
+  50% {
+    transform: scale(
+      calc(1.1 + var(--voice) * 0.12)
+    );
+
+    filter: blur(5px);
+  }
+}
+
+.core-light {
+  width: 25%;
+  height: 25%;
+
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow:
+    0 0 30px white,
+    0 0 60px var(--vex-primary);
+}
+
+.orb-glow {
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--vex-primary) 35%,
+      transparent
+    );
+
+  box-shadow:
+    0 0 80px
+      color-mix(
+        in srgb,
+        var(--vex-primary) 15%,
+        transparent
+      );
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.jarvis-system-text {
+  margin-top: 20px;
+
+  text-align: center;
+
+  max-width: 80vw;
+}
+
+.system-title {
+  color: var(--vex-primary);
+
+  font-size: 27px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.2em;
+
+  text-shadow:
+    0 0 20px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 45%,
+      transparent
+    );
+}
+
+.system-message {
+  margin-top: 9px;
+
+  max-width: 700px;
+
+  color: rgba(235, 250, 255, 0.75);
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.08em;
+
+  line-height: 1.5;
+}
+
+.system-message.success {
+  color: var(--vex-primary);
+}
+
+.system-message.error {
+  color: #ff5577;
+}
+
+.voice-level {
+  margin-top: 8px;
+
+  color: rgba(150, 220, 235, 0.4);
+
+  font-size: 10px;
+
+  letter-spacing: 0.15em;
+}
+
+/* =========================
+   COMMAND
+========================= */
+
+.jarvis-command-area {
+  position: relative;
+
+  z-index: 20;
+
+  width: min(850px, calc(100% - 40px));
+
+  margin: 0 auto 25px;
 
   display: flex;
 
   align-items: center;
 
-  border:
-    1px solid
-    rgba(130, 220, 245, 0.065);
-
-  background:
-    rgba(2, 10, 16, 0.24);
-
-  backdrop-filter:
-    blur(10px);
+  gap: 10px;
 }
 
-.command-area input {
+.command-box {
   flex: 1;
 
-  height: 100%;
+  min-height: 62px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 8px 9px 8px 20px;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--vex-primary) 20%,
+      transparent
+    );
+
+  border-radius: 14px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-panel) 90%,
+      transparent
+    );
+
+  box-shadow:
+    0 0 30px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 5%,
+      transparent
+    );
+}
+
+.command-prefix {
+  color: var(--vex-primary);
+
+  font-size: 15px;
+
+  font-weight: 800;
+}
+
+.command-box input {
+  flex: 1;
 
   min-width: 0;
 
@@ -1713,205 +979,100 @@ button {
 
   background: transparent;
 
-  color:
-    rgba(230, 250, 255, 0.75);
+  color: white;
 
-  padding:
-    0
-    7px;
-
-  font-size: 12px;
+  font-size: 15px;
 }
 
-.command-area input::placeholder {
-  color:
-    rgba(190, 225, 235, 0.2);
+.command-box input::placeholder {
+  color: rgba(180, 225, 235, 0.32);
 }
 
-.voice-button,
-.command-submit {
-  width: 38px;
-  height: 38px;
+.command-send {
+  min-height: 44px;
 
-  border: 0;
+  padding: 0 20px;
 
-  background: transparent;
+  border:
+    1px solid
+    var(--vex-primary);
 
-  color:
-    rgba(170, 230, 245, 0.4);
+  border-radius: 9px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--vex-primary) 12%,
+      transparent
+    );
+
+  color: var(--vex-primary);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
 
   cursor: pointer;
+
+  transition: 0.2s;
 }
 
-.voice-button {
-  display: flex;
+.command-send:hover:not(:disabled) {
+  background: var(--vex-primary);
 
-  align-items: center;
+  color: #001018;
 
-  justify-content: center;
-
-  gap: 2px;
+  box-shadow:
+    0 0 25px
+    color-mix(
+      in srgb,
+      var(--vex-primary) 50%,
+      transparent
+    );
 }
 
-.voice-button i {
-  width: 2px;
-  height: 7px;
+.command-send:disabled {
+  opacity: 0.35;
 
-  border-radius: 2px;
-
-  background:
-    currentColor;
+  cursor: not-allowed;
 }
 
-.voice-button i:nth-child(2) {
-  height: 11px;
-}
-
-.voice-button i:nth-child(3) {
-  height: 14px;
-}
-
-.voice-button i:nth-child(4) {
-  height: 10px;
-}
-
-.voice-button i:nth-child(5) {
-  height: 7px;
-}
-
-.command-submit {
-  font-size: 16px;
-}
-
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
-
-.home-footer {
-  position: absolute;
-
-  left: 50%;
-  bottom: 19px;
-
-  transform:
-    translateX(-50%);
-
-  color:
-    rgba(150, 210, 225, 0.18);
-
-  font-size: 7px;
-
-  letter-spacing: 0.2em;
-
-  white-space: nowrap;
-}
-
-.home-footer span {
-  margin:
-    0
-    8px;
-
-  color:
-    rgba(80, 205, 235, 0.15);
-}
-
-
-/* ============================================================
-   CINEMATIC PROFILE
-   ============================================================ */
-
-.cinematic-backdrop {
-  position: absolute;
-
-  inset: 0;
-
-  z-index: 90;
-
-  border: 0;
-
-  background:
-    rgba(0, 4, 9, 0.3);
-
-  backdrop-filter:
-    blur(2px);
-
-  cursor: default;
-}
-
-.profile-active
-.jarvis-orb-stage,
-.profile-active
-.home-brand,
-.profile-active
-.command-area {
-  filter:
-    blur(4px);
-
-  transition:
-    filter
-    0.35s
-    ease;
-}
-
-
-/* ============================================================
-   MOBILE
-   ============================================================ */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 700px) {
-  .jarvis-orb-stage {
-    width: 100vw;
-    height: 75vh;
+  .jarvis-header {
+    padding: 14px 16px;
+  }
+
+  .pfp-button {
+    width: 56px;
+    height: 56px;
+  }
+
+  .brand-title {
+    font-size: 18px;
+  }
+
+  .brand-subtitle,
+  .header-status {
+    display: none;
   }
 
   .jarvis-orb {
-    transform:
-      translate(-50%, -50%)
-      scale(0.74);
+    width: 80vw;
   }
 
-  .orb-body {
-    width: 300px;
-    height: 300px;
+  .command-box {
+    min-height: 56px;
+
+    padding-left: 12px;
   }
 
-  .orb-mist {
-    transform:
-      translate(-50%, -50%)
-      scale(0.85);
-  }
-
-  .orb-particle {
-    width: 2.5px;
-    height: 2.5px;
-  }
-
-  .command-area {
-    bottom: 45px;
-  }
-
-  .home-footer {
-    display: none;
-  }
-}
-
-
-/* ============================================================
-   REDUCED MOTION
-   ============================================================ */
-
-@media (
-  prefers-reduced-motion: reduce
-) {
-  .home-cosmos,
-  .orb-body,
-  .orb-mist,
-  .orb-gravity-smoke,
-  .orb-liquid,
-  .orb-smoke,
-  .orb-vortex,
-  .orb-highlight {
-    animation: none;
+  .command-send {
+    padding: 0 12px;
   }
 }

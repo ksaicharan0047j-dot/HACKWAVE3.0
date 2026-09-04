@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../Project.css";
+import "./projects.css";
 
 export default function Project() {
   const [open, setOpen] = useState(false);

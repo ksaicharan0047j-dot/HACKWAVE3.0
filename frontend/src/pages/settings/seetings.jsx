@@ -1,179 +1,106 @@
 import React, { useEffect, useState } from "react";
-import "./Settings.css";
+import "./settings.css";
 
 export default function Settings() {
   const [open, setOpen] = useState(false);
-
   const [voice, setVoice] = useState(true);
-  const [camera, setCamera] = useState(false);
-  const [screen, setScreen] = useState(false);
+  const [animations, setAnimations] = useState(true);
+  const [autoVerify, setAutoVerify] = useState(true);
 
   useEffect(() => {
-    const openSettings = () => {
-      setOpen(true);
-    };
-
-    const closeSettings = () => {
-      setOpen(false);
-    };
+    const handler = () => setOpen(true);
 
     window.addEventListener(
       "jarvis:settings",
-      openSettings
-    );
-
-    window.addEventListener(
-      "jarvis:settings:close",
-      closeSettings
+      handler
     );
 
     return () => {
       window.removeEventListener(
         "jarvis:settings",
-        openSettings
-      );
-
-      window.removeEventListener(
-        "jarvis:settings:close",
-        closeSettings
+        handler
       );
     };
   }, []);
 
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
-
-    return () => {
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
-    };
-  }, []);
-
-  if (!open) {
-    return null;
-  }
-
-  const SettingToggle = ({
-    icon,
-    title,
-    description,
-    enabled,
-    setEnabled,
-  }) => {
-    return (
-      <div className="setting-card">
-
-        <div className="setting-icon">
-          {icon}
-        </div>
-
-        <div className="setting-info">
-
-          <h3>{title}</h3>
-
-          <p>{description}</p>
-
-        </div>
-
-        <button
-          className={`setting-toggle ${
-            enabled ? "active" : ""
-          }`}
-          onClick={() =>
-            setEnabled((value) => !value)
-          }
-        >
-          <span />
-        </button>
-
-      </div>
-    );
-  };
+  if (!open) return null;
 
   return (
     <div className="settings-overlay">
+      <div className="settings-window">
 
-      <div
-        className="settings-backdrop"
-        onClick={() => setOpen(false)}
-      />
+        <button
+          className="settings-close"
+          onClick={() => setOpen(false)}
+        >
+          ×
+        </button>
 
-      <div className="settings-panel">
-
-        <div className="settings-header">
-
-          <div>
-            <span className="settings-small-title">
-              JARVIS SYSTEM
-            </span>
-
-            <h2>
-              Settings
-            </h2>
-          </div>
-
-          <button
-            className="settings-close"
-            onClick={() => setOpen(false)}
-          >
-            ×
-          </button>
-
+        <div className="settings-title">
+          VEXORITE SETTINGS
         </div>
 
-        <div className="settings-line" />
-
-        <div className="settings-section-title">
-          SYSTEM CONTROLS
+        <div className="settings-subtitle">
+          AGENT CONFIGURATION
         </div>
 
-        <SettingToggle
-          icon="🎙️"
-          title="Voice Control"
-          description="Allow JARVIS to listen for voice commands."
-          enabled={voice}
-          setEnabled={setVoice}
-        />
+        <div className="settings-list">
 
-        <SettingToggle
-          icon="📷"
-          title="Camera Control"
-          description="Enable camera-based interaction."
-          enabled={camera}
-          setEnabled={setCamera}
-        />
+          <label className="setting-row">
+            <div>
+              <strong>VOICE INPUT</strong>
+              <span>
+                Enable microphone interaction
+              </span>
+            </div>
 
-        <SettingToggle
-          icon="🖥️"
-          title="Screen Control"
-          description="Enable screen interaction features."
-          enabled={screen}
-          setEnabled={setScreen}
-        />
+            <input
+              type="checkbox"
+              checked={voice}
+              onChange={(e) =>
+                setVoice(e.target.checked)
+              }
+            />
+          </label>
+
+          <label className="setting-row">
+            <div>
+              <strong>ORBIT ANIMATION</strong>
+              <span>
+                Enable visual agent animation
+              </span>
+            </div>
+
+            <input
+              type="checkbox"
+              checked={animations}
+              onChange={(e) =>
+                setAnimations(e.target.checked)
+              }
+            />
+          </label>
+
+          <label className="setting-row">
+            <div>
+              <strong>AUTO VERIFICATION</strong>
+              <span>
+                Verify generated websites
+              </span>
+            </div>
+
+            <input
+              type="checkbox"
+              checked={autoVerify}
+              onChange={(e) =>
+                setAutoVerify(e.target.checked)
+              }
+            />
+          </label>
+
+        </div>
 
         <div className="settings-footer">
-
-          <span className="system-status-dot" />
-
-          <span>
-            SYSTEM CONFIGURATION
-          </span>
-
-          <span className="status-online">
-            ONLINE
-          </span>
-
+          VEXORITE CORE • ONLINE
         </div>
 
       </div>

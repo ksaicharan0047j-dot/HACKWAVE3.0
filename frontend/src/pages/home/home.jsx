@@ -1,7 +1,45 @@
 import React, { useEffect, useRef, useState } from "react";
-import "./Home.css";
-import Settings from "../../components/pages/Settings/Settings";
-import Project from "../../components/pages/Project/Project";
+import "./home.css";
+import Settings from "../settings/seetings";
+import Project from "../projects/projects";
+import Themes from "../themes/themes";
+
+const THEMES = {
+  CYAN: {
+    primary: "#00eaff",
+    secondary: "#0077ff",
+    background: "#020b12",
+    panel: "#071923",
+  },
+
+  VIOLET: {
+    primary: "#a970ff",
+    secondary: "#6428ff",
+    background: "#080412",
+    panel: "#130a22",
+  },
+
+  PINK: {
+    primary: "#ff65d8",
+    secondary: "#ff237c",
+    background: "#12030d",
+    panel: "#220916",
+  },
+
+  GREEN: {
+    primary: "#36ff9b",
+    secondary: "#00a86b",
+    background: "#02100a",
+    panel: "#071c12",
+  },
+
+  ORANGE: {
+    primary: "#ffad52",
+    secondary: "#ff4d00",
+    background: "#120903",
+    panel: "#211108",
+  },
+};
 
 export default function Home() {
   const orbRef = useRef(null);
@@ -9,34 +47,57 @@ export default function Home() {
   const audioContextRef = useRef(null);
   const streamRef = useRef(null);
 
-  const [voiceLevel, setVoiceLevel] = useState(0);
-  const [agentVoice, setAgentVoice] = useState(0);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [command, setCommand] = useState("");
+  const [activePanel, setActivePanel] = useState(null);
 
-  /* =========================================
-     MICROPHONE
-  ========================================= */
+  const [theme, setTheme] = useState(
+    localStorage.getItem("vexorite-theme") || "CYAN"
+  );
+
+  const [voiceLevel, setVoiceLevel] = useState(0);
+
+  const [command, setCommand] = useState("");
+  const [agentStatus, setAgentStatus] = useState("IDLE");
+  const [agentResponse, setAgentResponse] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+
+  const currentTheme = THEMES[theme];
+
+  /* APPLY THEME TO ENTIRE PAGE */
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const selected = THEMES[theme];
+
+    root.style.setProperty("--vex-primary", selected.primary);
+    root.style.setProperty("--vex-secondary", selected.secondary);
+    root.style.setProperty("--vex-background", selected.background);
+    root.style.setProperty("--vex-panel", selected.panel);
+
+    localStorage.setItem("vexorite-theme", theme);
+
+    window.dispatchEvent(
+      new CustomEvent("vexorite:theme", {
+        detail: selected,
+      })
+    );
+  }, [theme]);
+
+  /* MICROPHONE */
 
   useEffect(() => {
     let mounted = true;
 
-    const startMicrophone = async () => {
+    const startMic = async () => {
       try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-          console.log("Microphone is not supported.");
-          return;
-        }
+        if (!navigator.mediaDevices?.getUserMedia) return;
 
         const stream =
           await navigator.mediaDevices.getUserMedia({
             audio: true,
           });
 
-        if (!mounted) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
+        if (!mounted) return;
 
         streamRef.current = stream;
 
@@ -44,78 +105,62 @@ export default function Home() {
           window.AudioContext ||
           window.webkitAudioContext;
 
-        if (!AudioContext) {
-          console.log("AudioContext is not supported.");
-          return;
-        }
+        if (!AudioContext) return;
 
-        const audioContext = new AudioContext();
+        const context = new AudioContext();
 
-        const analyser =
-          audioContext.createAnalyser();
+        const analyser = context.createAnalyser();
 
         analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.82;
+        analyser.smoothingTimeConstant = 0.8;
 
         const source =
-          audioContext.createMediaStreamSource(stream);
+          context.createMediaStreamSource(stream);
 
         source.connect(analyser);
 
-        audioContextRef.current = audioContext;
+        audioContextRef.current = context;
 
-        const dataArray = new Uint8Array(
+        const data = new Uint8Array(
           analyser.frequencyBinCount
         );
 
-        let smoothLevel = 0;
-
-        const detectVoice = () => {
+        const loop = () => {
           if (!mounted) return;
 
-          analyser.getByteFrequencyData(dataArray);
+          analyser.getByteFrequencyData(data);
 
           let total = 0;
 
-          for (let i = 0; i < dataArray.length; i++) {
-            total += dataArray[i];
+          for (let i = 0; i < data.length; i++) {
+            total += data[i];
           }
 
-          const average =
-            total / dataArray.length / 255;
-
-          const intensity = Math.min(
+          const level = Math.min(
             1,
-            average * 3
+            (total / data.length / 255) * 3
           );
 
-          smoothLevel =
-            smoothLevel * 0.84 +
-            intensity * 0.16;
-
-          setVoiceLevel(smoothLevel);
+          setVoiceLevel(level);
 
           if (orbRef.current) {
             orbRef.current.style.setProperty(
               "--voice",
-              smoothLevel
+              level
             );
           }
 
           animationRef.current =
-            requestAnimationFrame(detectVoice);
+            requestAnimationFrame(loop);
         };
 
-        detectVoice();
-      } catch (error) {
-        console.log(
-          "Microphone permission was not granted.",
-          error
-        );
+        loop();
+      } catch {
+        console.log("Microphone unavailable.");
       }
     };
 
-    startMicrophone();
+    startMic();
 
     return () => {
       mounted = false;
@@ -136,178 +181,216 @@ export default function Home() {
     };
   }, []);
 
-  /* =========================================
-     JARVIS SPEAKING EVENT
-  ========================================= */
+  /* COMMAND */
 
-  useEffect(() => {
-    const handleSpeaking = (event) => {
-      const level =
-        event.detail?.level ?? 0.8;
+  const sendCommand = async () => {
+    const text = command.trim();
 
-      setAgentVoice(level);
+    if (!text || isRunning) return;
 
-      if (orbRef.current) {
-        orbRef.current.style.setProperty(
-          "--agent-voice",
-          level
+    setCommand("");
+    setAgentResponse("");
+    setAgentStatus("EXECUTING");
+    setIsRunning(true);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/agent/run",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            command: text,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.error || "Agent request failed."
         );
       }
 
-      setTimeout(() => {
-        setAgentVoice(0);
-
-        if (orbRef.current) {
-          orbRef.current.style.setProperty(
-            "--agent-voice",
-            0
-          );
-        }
-      }, 250);
-    };
-
-    window.addEventListener(
-      "jarvis:speaking",
-      handleSpeaking
-    );
-
-    return () => {
-      window.removeEventListener(
-        "jarvis:speaking",
-        handleSpeaking
+      setAgentStatus("SUCCESS");
+      setAgentResponse(
+        data.result || "Task completed."
       );
-    };
-  }, []);
-
-  /* =========================================
-     COMMAND
-  ========================================= */
-
-  const sendCommand = () => {
-    const text = command.trim();
-
-    if (!text) return;
-
-    window.dispatchEvent(
-      new CustomEvent("jarvis:command", {
-        detail: {
-          command: text,
-        },
-      })
-    );
-
-    setCommand("");
+    } catch (error) {
+      setAgentStatus("ERROR");
+      setAgentResponse(
+        error.message ||
+          "Unable to reach VEXORITE backend."
+      );
+    } finally {
+      setIsRunning(false);
+    }
   };
 
-  const handleCommandKeyDown = (event) => {
-    if (event.key === "Enter") {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
       sendCommand();
     }
   };
 
-  /* =========================================
-     NAVIGATION
-  ========================================= */
+  /* PROFILE */
+
+  const toggleProfile = () => {
+    setProfileOpen((value) => !value);
+  };
+
+  const closeProfile = () => {
+    setProfileOpen(false);
+  };
+
+  /* NAVIGATION */
 
   const openProjects = () => {
+    setActivePanel("projects");
+    setProfileOpen(false);
+
     window.dispatchEvent(
       new Event("jarvis:projects")
     );
   };
 
   const openSettings = () => {
+    setActivePanel("settings");
+    setProfileOpen(false);
+
     window.dispatchEvent(
       new Event("jarvis:settings")
     );
   };
 
-  const openVoice = () => {
-    window.dispatchEvent(
-      new Event("jarvis:voice")
-    );
-  };
-
   const openThemes = () => {
+    setActivePanel("themes");
+    setProfileOpen(false);
+
     window.dispatchEvent(
-      new Event("jarvis:themes")
+      new Event("vexorite:themes")
     );
   };
-
-  /* =========================================
-     RENDER
-  ========================================= */
 
   return (
-    <div className="jarvis-home">
+    <div
+      className={`jarvis-home ${
+        profileOpen ? "profile-active" : ""
+      }`}
+      style={{
+        "--theme-primary": currentTheme.primary,
+        "--theme-secondary": currentTheme.secondary,
+      }}
+    >
+
+      {/* BLUR LAYER */}
+
+      {profileOpen && (
+        <div
+          className="profile-blur"
+          onClick={closeProfile}
+        />
+      )}
 
       {/* HEADER */}
 
       <header className="jarvis-header">
+
+        {/* PFP */}
+
+        <div className="profile-container">
+
+          <button
+            className={`pfp-button ${
+              profileOpen ? "active" : ""
+            }`}
+            onClick={toggleProfile}
+            aria-label="Open profile"
+          >
+            <span className="pfp-ring">
+              <span className="pfp-face">V</span>
+            </span>
+          </button>
+
+          {/* PROFILE MENU */}
+
+          {profileOpen && (
+            <div className="profile-menu">
+
+              <div className="profile-menu-header">
+                <div className="menu-pfp">
+                  V
+                </div>
+
+                <div>
+                  <div className="menu-name">
+                    VEXORITE
+                  </div>
+
+                  <div className="menu-status">
+                    ● SYSTEM USER
+                  </div>
+                </div>
+              </div>
+
+              <div className="menu-divider" />
+
+              <button
+                className="profile-menu-button"
+                onClick={openProjects}
+              >
+                <span>◈</span>
+                PROJECTS
+              </button>
+
+              <button
+                className="profile-menu-button"
+                onClick={openSettings}
+              >
+                <span>⚙</span>
+                SETTINGS
+              </button>
+
+              <button
+                className="profile-menu-button"
+                onClick={openThemes}
+              >
+                <span>◇</span>
+                THEMES
+              </button>
+
+            </div>
+          )}
+        </div>
+
+        {/* BRAND */}
 
         <div className="jarvis-brand">
           <div className="brand-dot" />
 
           <div>
             <div className="brand-title">
-              JARVIS
+              VEXORITE
             </div>
 
             <div className="brand-subtitle">
-              AI SYSTEM
+              AUTONOMOUS AI AGENT
             </div>
           </div>
         </div>
+
+        {/* STATUS */}
 
         <div className="header-status">
           <span className="status-indicator" />
           SYSTEM ONLINE
         </div>
 
-        <button
-          className="profile-button"
-          onClick={() =>
-            setProfileOpen((value) => !value)
-          }
-        >
-          <span className="profile-icon">
-            ◉
-          </span>
-
-          <span>PROFILE</span>
-        </button>
       </header>
-
-      {/* PROFILE */}
-
-      {profileOpen && (
-        <div className="profile-panel">
-
-          <div className="profile-panel-header">
-            <span>USER PROFILE</span>
-
-            <button
-              className="profile-close"
-              onClick={() =>
-                setProfileOpen(false)
-              }
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="profile-avatar">
-            ◉
-          </div>
-
-          <div className="profile-name">
-            JARVIS USER
-          </div>
-
-          <div className="profile-status">
-            SYSTEM ACCESS GRANTED
-          </div>
-        </div>
-      )}
 
       {/* MAIN */}
 
@@ -318,9 +401,9 @@ export default function Home() {
           ref={orbRef}
           style={{
             "--voice": voiceLevel,
-            "--agent-voice": agentVoice,
           }}
         >
+
           <div className="orb-mist orb-mist-1" />
           <div className="orb-mist orb-mist-2" />
           <div className="orb-mist orb-mist-3" />
@@ -342,21 +425,34 @@ export default function Home() {
             <div className="orb-core">
               <div className="core-light" />
             </div>
+
           </div>
         </div>
 
         <div className="jarvis-system-text">
 
           <div className="system-title">
-            JARVIS
+            VEXORITE
           </div>
 
-          <div className="system-message">
-            LISTENING FOR COMMAND
+          <div
+            className={`system-message ${agentStatus.toLowerCase()}`}
+          >
+            {agentStatus === "IDLE" &&
+              "READY — GIVE ME A TASK"}
+
+            {agentStatus === "EXECUTING" &&
+              "EXECUTING COMMAND..."}
+
+            {agentStatus === "SUCCESS" &&
+              agentResponse}
+
+            {agentStatus === "ERROR" &&
+              agentResponse}
           </div>
 
           <div className="voice-level">
-            VOICE LEVEL{" "}
+            {agentStatus} • VOICE{" "}
             {Math.round(voiceLevel * 100)}%
           </div>
 
@@ -370,89 +466,44 @@ export default function Home() {
         <div className="command-box">
 
           <span className="command-prefix">
-            &gt;
+            VEX &gt;
           </span>
 
           <input
             value={command}
-            onChange={(event) =>
-              setCommand(event.target.value)
+            onChange={(e) =>
+              setCommand(e.target.value)
             }
-            onKeyDown={handleCommandKeyDown}
-            placeholder="Enter command..."
+            onKeyDown={handleKeyDown}
+            disabled={isRunning}
+            placeholder={
+              isRunning
+                ? "VEXORITE IS WORKING..."
+                : "Tell Vexorite what to do..."
+            }
           />
 
           <button
             className="command-send"
             onClick={sendCommand}
+            disabled={
+              isRunning || !command.trim()
+            }
           >
-            SEND
+            {isRunning
+              ? "RUNNING"
+              : "EXECUTE"}
           </button>
 
         </div>
 
-        <button
-          className="voice-button"
-          onClick={openVoice}
-        >
-          🎙
-        </button>
-
       </div>
 
-      {/* NAVIGATION */}
-
-      <nav className="jarvis-navigation">
-
-        <button
-          className="nav-button"
-          onClick={openProjects}
-        >
-          <span className="nav-icon">
-            ◈
-          </span>
-
-          <span>
-            PROJECTS
-          </span>
-        </button>
-
-        <button
-          className="nav-button"
-          onClick={openSettings}
-        >
-          <span className="nav-icon">
-            ⚙
-          </span>
-
-          <span>
-            SETTINGS
-          </span>
-        </button>
-
-        <button
-          className="nav-button"
-          onClick={openThemes}
-        >
-          <span className="nav-icon">
-            ◇
-          </span>
-
-          <span>
-            THEMES
-          </span>
-        </button>
-
-      </nav>
-
-      {/* PROJECTS WINDOW */}
+      {/* EXISTING COMPONENTS */}
 
       <Project />
-
-      {/* SETTINGS WINDOW */}
-
       <Settings />
-
+      <Themes/>
     </div>
   );
 }
