@@ -2578,3 +2578,35 @@ input:focus-visible {
     width: min(245px, calc(100vw - 36px));
   }
 }
+/* =========================================================
+   VEXORITE SYSTEM TEXT — LEFT OF ORB
+   ========================================================= */
+
+.jarvis-system-text {
+  position: absolute;
+  left: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 360px;
+  text-align: left;
+  z-index: 20;
+}
+
+.jarvis-system-text .system-title {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 8px;
+}
+
+.jarvis-system-text .system-message {
+  margin-top: 14px;
+  font-size: 20px;
+  line-height: 1.45;
+  max-width: 350px;
+}
+
+.jarvis-system-text .voice-level {
+  margin-top: 14px;
+  font-size: 14px;
+  letter-spacing: 3px;
+}
