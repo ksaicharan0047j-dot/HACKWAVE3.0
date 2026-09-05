@@ -5,6 +5,15 @@ import Settings from "../settings/seetings";
 import Project from "../projects/projects";
 import Themes from "../themes/themes";
 
+import {
+  FilesetResolver,
+  HandLandmarker,
+} from "@mediapipe/tasks-vision";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://127.0.0.1:8000";
+
 const THEMES = {
   CYAN: {
     primary: "#00eaff",
@@ -42,12 +51,34 @@ const THEMES = {
   },
 };
 
+const MEDIAPIPE_WASM =
+  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm";
+
+const HAND_MODEL =
+  "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+
 export default function Home() {
   const orbRef = useRef(null);
   const animationRef = useRef(null);
   const audioContextRef = useRef(null);
   const streamRef = useRef(null);
   const recognitionRef = useRef(null);
+
+  /* =========================================================
+     GESTURE REFERENCES
+     ========================================================= */
+
+  const gestureVideoRef = useRef(null);
+  const gestureStreamRef = useRef(null);
+  const handLandmarkerRef = useRef(null);
+  const gestureAnimationRef = useRef(null);
+
+  const lastHandYRef = useRef(null);
+  const lastGestureTimeRef = useRef(0);
+
+  /* =========================================================
+     STATE
+     ========================================================= */
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
@@ -57,6 +88,19 @@ export default function Home() {
   );
 
   const [voiceLevel, setVoiceLevel] = useState(0);
+
+  /* =========================================================
+     DEVICE / PRIVACY SETTINGS
+  ========================================================= */
+
+  const [deviceSettings, setDeviceSettings] = useState(() => ({
+    microphone:
+      localStorage.getItem("vexorite-microphone") !== "false",
+    camera:
+      localStorage.getItem("vexorite-camera") !== "false",
+    gestures:
+      localStorage.getItem("vexorite-gestures") !== "false",
+  }));
 
   const [command, setCommand] = useState("");
   const [agentStatus, setAgentStatus] = useState("IDLE");
@@ -71,6 +115,17 @@ export default function Home() {
 
   const [isListening, setIsListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(true);
+
+  /* =========================================================
+     SOCIAL / GESTURE STATE
+     ========================================================= */
+
+  const [socialWindow, setSocialWindow] = useState(null);
+  const [gestureActive, setGestureActive] = useState(false);
+  const [gestureStatus, setGestureStatus] = useState(
+    "GESTURE CONTROL OFF"
+  );
+  const [gestureReady, setGestureReady] = useState(false);
 
   const currentTheme = THEMES[theme];
 
@@ -91,10 +146,84 @@ export default function Home() {
 
     window.dispatchEvent(
       new CustomEvent("vexorite:theme", {
-        detail: selected,
+        detail: {
+          ...selected,
+          name: theme,
+        },
       })
     );
   }, [theme]);
+
+  /* =========================================================
+     LISTEN FOR THEME CHANGES FROM THEMES COMPONENT
+     ========================================================= */
+
+  useEffect(() => {
+    const handleThemeChange = (event) => {
+      const requestedTheme = event.detail?.theme;
+
+      if (
+        requestedTheme &&
+        Object.prototype.hasOwnProperty.call(
+          THEMES,
+          requestedTheme
+        )
+      ) {
+        setTheme(requestedTheme);
+      }
+    };
+
+    window.addEventListener(
+      "vexorite:set-theme",
+      handleThemeChange
+    );
+
+    window.addEventListener(
+      "vexorite:theme-changed",
+      handleThemeChange
+    );
+
+    return () => {
+      window.removeEventListener(
+        "vexorite:set-theme",
+        handleThemeChange
+      );
+
+      window.removeEventListener(
+        "vexorite:theme-changed",
+        handleThemeChange
+      );
+    };
+  }, []);
+
+  /* =========================================================
+     DEVICE SETTINGS BRIDGE
+     ========================================================= */
+
+  useEffect(() => {
+    const handleDeviceSettings = (event) => {
+      const next = event.detail;
+
+      if (!next) return;
+
+      setDeviceSettings((current) => ({
+        ...current,
+        ...next,
+      }));
+    };
+
+    window.addEventListener(
+      "vexorite:device-settings",
+      handleDeviceSettings
+    );
+
+    return () => {
+      window.removeEventListener(
+        "vexorite:device-settings",
+        handleDeviceSettings
+      );
+    };
+  }, []);
 
   /* =========================================================
      MICROPHONE LEVEL
@@ -105,18 +234,25 @@ export default function Home() {
 
     const startMic = async () => {
       try {
+        if (!deviceSettings.microphone) {
+          setVoiceLevel(0);
+          return;
+        }
+
         if (!navigator.mediaDevices?.getUserMedia) return;
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
 
         if (!mounted) return;
 
         streamRef.current = stream;
 
         const AudioContext =
-          window.AudioContext || window.webkitAudioContext;
+          window.AudioContext ||
+          window.webkitAudioContext;
 
         if (!AudioContext) return;
 
@@ -126,12 +262,17 @@ export default function Home() {
         analyser.fftSize = 256;
         analyser.smoothingTimeConstant = 0.8;
 
-        const source = context.createMediaStreamSource(stream);
+        const source =
+          context.createMediaStreamSource(stream);
+
         source.connect(analyser);
 
         audioContextRef.current = context;
 
-        const data = new Uint8Array(analyser.frequencyBinCount);
+        const data =
+          new Uint8Array(
+            analyser.frequencyBinCount
+          );
 
         const loop = () => {
           if (!mounted) return;
@@ -152,10 +293,14 @@ export default function Home() {
           setVoiceLevel(level);
 
           if (orbRef.current) {
-            orbRef.current.style.setProperty("--voice", level);
+            orbRef.current.style.setProperty(
+              "--voice",
+              level
+            );
           }
 
-          animationRef.current = requestAnimationFrame(loop);
+          animationRef.current =
+            requestAnimationFrame(loop);
         };
 
         loop();
@@ -170,7 +315,9 @@ export default function Home() {
       mounted = false;
 
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+        cancelAnimationFrame(
+          animationRef.current
+        );
       }
 
       if (streamRef.current) {
@@ -183,7 +330,40 @@ export default function Home() {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [deviceSettings.microphone]);
+
+  useEffect(() => {
+    if (deviceSettings.microphone) return;
+
+    if (streamRef.current) {
+      streamRef.current
+        .getTracks()
+        .forEach((track) => track.stop());
+
+      streamRef.current = null;
+    }
+
+    if (audioContextRef.current) {
+      try {
+        audioContextRef.current.close();
+      } catch {
+        // Already closed.
+      }
+
+      audioContextRef.current = null;
+    }
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        // Already stopped.
+      }
+    }
+
+    setIsListening(false);
+    setVoiceLevel(0);
+  }, [deviceSettings.microphone]);
 
   /* =========================================================
      SPEECH RECOGNITION
@@ -199,7 +379,8 @@ export default function Home() {
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition =
+      new SpeechRecognition();
 
     recognition.continuous = false;
     recognition.interimResults = true;
@@ -219,7 +400,8 @@ export default function Home() {
         i < event.results.length;
         i++
       ) {
-        transcript += event.results[i][0].transcript;
+        transcript +=
+          event.results[i][0].transcript;
       }
 
       transcript = transcript.trim();
@@ -239,6 +421,7 @@ export default function Home() {
 
       if (event.error === "not-allowed") {
         setAgentStatus("ERROR");
+
         setAgentResponse(
           "Microphone permission was denied."
         );
@@ -251,14 +434,21 @@ export default function Home() {
       setIsListening(false);
 
       setAgentStatus((current) =>
-        current === "LISTENING" ? "IDLE" : current
+        current === "LISTENING"
+          ? "IDLE"
+          : current
       );
     };
 
     recognitionRef.current = recognition;
 
     return () => {
-      recognition.stop();
+      try {
+        recognition.stop();
+      } catch {
+        // Already stopped.
+      }
+
       recognitionRef.current = null;
     };
   }, []);
@@ -272,13 +462,16 @@ export default function Home() {
 
     if (!voiceSupported) {
       setAgentStatus("ERROR");
+
       setAgentResponse(
         "Voice recognition is not supported in this browser."
       );
+
       return;
     }
 
-    const recognition = recognitionRef.current;
+    const recognition =
+      recognitionRef.current;
 
     if (!recognition) return;
 
@@ -292,6 +485,7 @@ export default function Home() {
     try {
       setCommand("");
       setAgentResponse("");
+
       recognition.start();
     } catch (error) {
       console.log(
@@ -302,17 +496,463 @@ export default function Home() {
   };
 
   /* =========================================================
+     SOCIAL COMMAND DETECTION
+     ========================================================= */
+
+  const detectSocialCommand = (text) => {
+    const normalized =
+      text.toLowerCase();
+
+    const youtube =
+      normalized.includes("youtube") &&
+      (
+        normalized.includes("short") ||
+        normalized.includes("shorts")
+      );
+
+    const instagram =
+      normalized.includes("instagram") &&
+      (
+        normalized.includes("reel") ||
+        normalized.includes("reels")
+      );
+
+    if (youtube) return "youtube";
+    if (instagram) return "instagram";
+
+    return null;
+  };
+
+  /* =========================================================
+     OPEN SOCIAL WINDOW
+     ========================================================= */
+
+  const openSocialWindow = (platform) => {
+    setSocialWindow(platform);
+
+    if (deviceSettings.gestures && deviceSettings.camera) {
+      setGestureStatus(
+        "STARTING GESTURE CONTROL"
+      );
+
+      setGestureActive(true);
+      setGestureReady(false);
+    } else {
+      setGestureStatus(
+        deviceSettings.camera
+          ? "GESTURE CONTROL OFF"
+          : "CAMERA DISABLED"
+      );
+
+      setGestureActive(false);
+      setGestureReady(false);
+    }
+
+    setAgentStatus("SUCCESS");
+
+    if (platform === "youtube") {
+      setAgentResponse(
+        deviceSettings.gestures && deviceSettings.camera
+          ? "YouTube Shorts opened. Gesture control enabled."
+          : "YouTube Shorts opened. Gesture control is disabled in Settings."
+      );
+    } else {
+      setAgentResponse(
+        deviceSettings.gestures && deviceSettings.camera
+          ? "Instagram Reels opened. Gesture control enabled."
+          : "Instagram Reels opened. Gesture control is disabled in Settings."
+      );
+    }
+  };
+
+  /* =========================================================
+     CLOSE SOCIAL WINDOW
+     ========================================================= */
+
+  const closeSocialWindow = () => {
+    setSocialWindow(null);
+    setGestureActive(false);
+    setGestureReady(false);
+
+    setGestureStatus(
+      "GESTURE CONTROL OFF"
+    );
+
+    lastHandYRef.current = null;
+
+    if (gestureAnimationRef.current) {
+      cancelAnimationFrame(
+        gestureAnimationRef.current
+      );
+    }
+
+    if (gestureStreamRef.current) {
+      gestureStreamRef.current
+        .getTracks()
+        .forEach((track) => track.stop());
+
+      gestureStreamRef.current = null;
+    }
+
+    if (gestureVideoRef.current) {
+      gestureVideoRef.current.srcObject = null;
+    }
+
+    if (handLandmarkerRef.current) {
+      try {
+        handLandmarkerRef.current.close();
+      } catch {
+        // Already closed.
+      }
+    }
+
+    handLandmarkerRef.current = null;
+  };
+
+  /* =========================================================
+     GESTURE CONTROL
+     ========================================================= */
+
+  useEffect(() => {
+    if (
+      !socialWindow ||
+      !gestureActive ||
+      !deviceSettings.gestures ||
+      !deviceSettings.camera
+    ) {
+      return;
+    }
+
+    let mounted = true;
+
+    const startGestureControl = async () => {
+      try {
+        setGestureStatus(
+          "LOADING HAND TRACKER"
+        );
+
+        const vision =
+          await FilesetResolver.forVisionTasks(
+            MEDIAPIPE_WASM
+          );
+
+        if (!mounted) return;
+
+        const landmarker =
+          await HandLandmarker.createFromOptions(
+            vision,
+            {
+              baseOptions: {
+                modelAssetPath: HAND_MODEL,
+                delegate: "GPU",
+              },
+
+              runningMode: "VIDEO",
+              numHands: 1,
+            }
+          );
+
+        if (!mounted) {
+          landmarker.close();
+          return;
+        }
+
+        handLandmarkerRef.current =
+          landmarker;
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia(
+            {
+              video: {
+                width: 640,
+                height: 480,
+                facingMode: "user",
+              },
+              audio: false,
+            }
+          );
+
+        if (!mounted) {
+          stream
+            .getTracks()
+            .forEach((track) =>
+              track.stop()
+            );
+
+          return;
+        }
+
+        gestureStreamRef.current =
+          stream;
+
+        const video =
+          gestureVideoRef.current;
+
+        if (!video) return;
+
+        video.srcObject = stream;
+
+        await video.play();
+
+        if (!mounted) return;
+
+        setGestureReady(true);
+
+        setGestureStatus(
+          "GESTURE CONTROL ACTIVE"
+        );
+
+        const detect = () => {
+          if (!mounted) return;
+
+          const currentVideo =
+            gestureVideoRef.current;
+
+          const currentLandmarker =
+            handLandmarkerRef.current;
+
+          if (
+            !currentVideo ||
+            !currentLandmarker ||
+            currentVideo.readyState < 2
+          ) {
+            gestureAnimationRef.current =
+              requestAnimationFrame(
+                detect
+              );
+
+            return;
+          }
+
+          const now =
+            performance.now();
+
+          const result =
+            currentLandmarker.detectForVideo(
+              currentVideo,
+              now
+            );
+
+          if (
+            result.landmarks?.length
+          ) {
+            const hand =
+              result.landmarks[0];
+
+            const currentY =
+              hand[0].y;
+
+            if (
+              lastHandYRef.current !==
+              null
+            ) {
+              const delta =
+                currentY -
+                lastHandYRef.current;
+
+              const timeSinceGesture =
+                Date.now() -
+                lastGestureTimeRef.current;
+
+              if (
+                timeSinceGesture > 900
+              ) {
+                if (
+                  delta < -0.035
+                ) {
+                  setGestureStatus(
+                    "HAND UP — NEXT"
+                  );
+
+                  window.dispatchEvent(
+                    new CustomEvent(
+                      "vexorite:social-next"
+                    )
+                  );
+
+                  lastGestureTimeRef.current =
+                    Date.now();
+                } else if (
+                  delta > 0.035
+                ) {
+                  setGestureStatus(
+                    "HAND DOWN — PREVIOUS"
+                  );
+
+                  window.dispatchEvent(
+                    new CustomEvent(
+                      "vexorite:social-previous"
+                    )
+                  );
+
+                  lastGestureTimeRef.current =
+                    Date.now();
+                } else {
+                  setGestureStatus(
+                    "GESTURE CONTROL ACTIVE"
+                  );
+                }
+              }
+            }
+
+            lastHandYRef.current =
+              currentY;
+          }
+
+          gestureAnimationRef.current =
+            requestAnimationFrame(
+              detect
+            );
+        };
+
+        detect();
+      } catch (error) {
+        console.error(
+          "Gesture control error:",
+          error
+        );
+
+        setGestureReady(false);
+
+        setGestureStatus(
+          "CAMERA ACCESS REQUIRED"
+        );
+      }
+    };
+
+    startGestureControl();
+
+    return () => {
+      mounted = false;
+
+      if (
+        gestureAnimationRef.current
+      ) {
+        cancelAnimationFrame(
+          gestureAnimationRef.current
+        );
+      }
+
+      if (
+        gestureStreamRef.current
+      ) {
+        gestureStreamRef.current
+          .getTracks()
+          .forEach((track) =>
+            track.stop()
+          );
+
+        gestureStreamRef.current =
+          null;
+      }
+
+      if (
+        gestureVideoRef.current
+      ) {
+        gestureVideoRef.current.srcObject =
+          null;
+      }
+
+      if (
+        handLandmarkerRef.current
+      ) {
+        try {
+          handLandmarkerRef.current.close();
+        } catch {
+          // Already closed.
+        }
+
+        handLandmarkerRef.current =
+          null;
+      }
+
+      lastHandYRef.current = null;
+    };
+  }, [
+    socialWindow,
+    gestureActive,
+    deviceSettings.gestures,
+    deviceSettings.camera,
+  ]);
+
+  /* =========================================================
+     SOCIAL GESTURE EVENTS
+     ========================================================= */
+
+  useEffect(() => {
+    const next = () => {
+      console.log(
+        "[VEXORITE] Gesture: NEXT"
+      );
+    };
+
+    const previous = () => {
+      console.log(
+        "[VEXORITE] Gesture: PREVIOUS"
+      );
+    };
+
+    window.addEventListener(
+      "vexorite:social-next",
+      next
+    );
+
+    window.addEventListener(
+      "vexorite:social-previous",
+      previous
+    );
+
+    return () => {
+      window.removeEventListener(
+        "vexorite:social-next",
+        next
+      );
+
+      window.removeEventListener(
+        "vexorite:social-previous",
+        previous
+      );
+    };
+  }, []);
+
+  /* =========================================================
      COMMAND
      ========================================================= */
 
   const sendCommand = async () => {
     const text = command.trim();
 
-    if (!text || isRunning || isDeploying) return;
+    if (
+      !text ||
+      isRunning ||
+      isDeploying
+    ) {
+      return;
+    }
 
-    if (isListening && recognitionRef.current) {
+    if (
+      isListening &&
+      recognitionRef.current
+    ) {
       recognitionRef.current.stop();
       setIsListening(false);
+    }
+
+    const socialPlatform =
+      detectSocialCommand(text);
+
+    if (socialPlatform) {
+      setCommand("");
+      setAgentResponse("");
+
+      setApprovalRequired(false);
+      setDeploymentResult(null);
+
+      openSocialWindow(
+        socialPlatform
+      );
+
+      return;
     }
 
     setCommand("");
@@ -326,24 +966,33 @@ export default function Home() {
     setDeploymentResult(null);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/agent/run",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            command: text,
-          }),
-        }
-      );
+      const response =
+        await fetch(
+          `${API_BASE_URL}/agent/run`,
+          {
+            method: "POST",
 
-      const data = await response.json();
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-      if (!response.ok || !data.success) {
+            body: JSON.stringify({
+              command: text,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
         throw new Error(
-          data.error || "Agent request failed."
+          data.error ||
+            "Agent request failed."
         );
       }
 
@@ -354,10 +1003,13 @@ export default function Home() {
       );
 
       setAgentResponse(
-        data.result || "Task completed."
+        data.result ||
+          "Task completed."
       );
 
-      if (data.approval_required) {
+      if (
+        data.approval_required
+      ) {
         setApprovalRequired(true);
 
         setPreviewUrl(
@@ -384,117 +1036,143 @@ export default function Home() {
      APPROVE DEPLOYMENT
      ========================================================= */
 
-  const approveDeployment = async () => {
-    const cleanRepo = repoUrl.trim();
+  const approveDeployment =
+    async () => {
+      const cleanRepo =
+        repoUrl.trim();
 
-    if (!cleanRepo) {
-      setAgentStatus("ERROR");
-      setAgentResponse(
-        "Please enter your GitHub repository URL."
-      );
-      return;
-    }
+      if (!cleanRepo) {
+        setAgentStatus("ERROR");
 
-    setIsDeploying(true);
-    setAgentStatus("DEPLOYING");
-
-    setAgentResponse(
-      "Approval received. Pushing project to GitHub..."
-    );
-
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/agent/approve",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            approved: true,
-            repo_url: cleanRepo,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error || "Deployment failed."
+        setAgentResponse(
+          "Please enter your GitHub repository URL."
         );
+
+        return;
       }
 
-      setApprovalRequired(false);
-      setDeploymentResult(data);
+      setIsDeploying(true);
+      setAgentStatus("DEPLOYING");
 
-      if (data.vercel) {
-        setAgentStatus("DEPLOYED");
-      } else {
-        setAgentStatus("SUCCESS");
+      setAgentResponse(
+        "Approval received. Pushing project to GitHub..."
+      );
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/agent/approve`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+                approved: true,
+                repo_url: cleanRepo,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (
+          !response.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.error ||
+              "Deployment failed."
+          );
+        }
+
+        setApprovalRequired(false);
+
+        setDeploymentResult(
+          data
+        );
+
+        if (data.vercel) {
+          setAgentStatus(
+            "DEPLOYED"
+          );
+        } else {
+          setAgentStatus(
+            "SUCCESS"
+          );
+        }
+
+        setAgentResponse(
+          data.message ||
+            "Deployment completed successfully."
+        );
+      } catch (error) {
+        setAgentStatus("ERROR");
+
+        setAgentResponse(
+          error.message ||
+            "Unable to process deployment."
+        );
+      } finally {
+        setIsDeploying(false);
       }
-
-      setAgentResponse(
-        data.message ||
-          "Deployment completed successfully."
-      );
-    } catch (error) {
-      setAgentStatus("ERROR");
-
-      setAgentResponse(
-        error.message ||
-          "Unable to process deployment."
-      );
-    } finally {
-      setIsDeploying(false);
-    }
-  };
+    };
 
   /* =========================================================
      REJECT DEPLOYMENT
      ========================================================= */
 
-  const rejectDeployment = async () => {
-    if (isDeploying) return;
+  const rejectDeployment =
+    async () => {
+      if (isDeploying) return;
 
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/agent/approve",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            approved: false,
-          }),
-        }
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/agent/approve`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+                approved: false,
+              }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        console.log(
+          "[VEXORITE] Deployment rejected:",
+          data
+        );
+      } catch (error) {
+        console.log(
+          "Unable to notify backend about rejection:",
+          error
+        );
+      }
+
+      setApprovalRequired(false);
+      setPreviewUrl("");
+      setRepoUrl("");
+      setDeploymentResult(null);
+
+      setAgentStatus("IDLE");
+
+      setAgentResponse(
+        "Deployment cancelled."
       );
-
-      const data = await response.json();
-
-      console.log(
-        "[VEXORITE] Deployment rejected:",
-        data
-      );
-    } catch (error) {
-      console.log(
-        "Unable to notify backend about rejection:",
-        error
-      );
-    }
-
-    setApprovalRequired(false);
-    setPreviewUrl("");
-    setRepoUrl("");
-    setDeploymentResult(null);
-
-    setAgentStatus("IDLE");
-
-    setAgentResponse(
-      "Deployment cancelled."
-    );
-  };
+    };
 
   /* =========================================================
      KEYBOARD
@@ -512,7 +1190,9 @@ export default function Home() {
      ========================================================= */
 
   const toggleProfile = () => {
-    setProfileOpen((value) => !value);
+    setProfileOpen(
+      (value) => !value
+    );
   };
 
   const closeProfile = () => {
@@ -520,15 +1200,19 @@ export default function Home() {
   };
 
   /* =========================================================
-     NAVIGATION
+     PANEL HELPERS
      ========================================================= */
+
+  const closePanels = () => {
+    setActivePanel(null);
+  };
 
   const openProjects = () => {
     setActivePanel("projects");
     setProfileOpen(false);
 
     window.dispatchEvent(
-      new Event("jarvis:projects")
+      new Event("vexorite:projects")
     );
   };
 
@@ -537,7 +1221,7 @@ export default function Home() {
     setProfileOpen(false);
 
     window.dispatchEvent(
-      new Event("jarvis:settings")
+      new Event("vexorite:settings")
     );
   };
 
@@ -550,25 +1234,34 @@ export default function Home() {
     );
   };
 
+  /* =========================================================
+     RENDER
+     ========================================================= */
+
   return (
     <div
       className={`jarvis-home ${
-        profileOpen ? "profile-active" : ""
+        profileOpen
+          ? "profile-active"
+          : ""
       }`}
       style={{
-        "--theme-primary": currentTheme.primary,
-        "--theme-secondary": currentTheme.secondary,
+        "--theme-primary":
+          currentTheme.primary,
+
+        "--theme-secondary":
+          currentTheme.secondary,
       }}
     >
-
       {/* =====================================================
-          PROFILE BLUR
+          PROFILE BACKDROP
           ===================================================== */}
 
       {profileOpen && (
         <div
           className="profile-blur"
           onClick={closeProfile}
+          aria-hidden="true"
         />
       )}
 
@@ -577,28 +1270,33 @@ export default function Home() {
           ===================================================== */}
 
       <header className="jarvis-header">
-
-        {/* PROFILE */}
-
         <div className="profile-container">
-
           <button
+            type="button"
             className={`pfp-button ${
-              profileOpen ? "active" : ""
+              profileOpen
+                ? "active"
+                : ""
             }`}
             onClick={toggleProfile}
-            aria-label="Open profile"
+            aria-label="Open profile menu"
+            aria-expanded={profileOpen}
           >
             <span className="pfp-ring">
-              <span className="pfp-face">V</span>
+              <span className="pfp-face">
+                V
+              </span>
             </span>
           </button>
 
           {profileOpen && (
-            <div className="profile-menu">
-
+            <div
+              className="profile-menu"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
               <div className="profile-menu-header">
-
                 <div className="menu-pfp">
                   V
                 </div>
@@ -609,15 +1307,15 @@ export default function Home() {
                   </div>
 
                   <div className="menu-status">
-                    ● SYSTEM USER
+                    SYSTEM USER
                   </div>
                 </div>
-
               </div>
 
               <div className="menu-divider" />
 
               <button
+                type="button"
                 className="profile-menu-button"
                 onClick={openProjects}
               >
@@ -626,6 +1324,7 @@ export default function Home() {
               </button>
 
               <button
+                type="button"
                 className="profile-menu-button"
                 onClick={openSettings}
               >
@@ -634,22 +1333,18 @@ export default function Home() {
               </button>
 
               <button
+                type="button"
                 className="profile-menu-button"
                 onClick={openThemes}
               >
                 <span>◇</span>
                 THEMES
               </button>
-
             </div>
           )}
-
         </div>
 
-        {/* BRAND */}
-
         <div className="jarvis-brand">
-
           <div className="brand-dot" />
 
           <div>
@@ -661,16 +1356,12 @@ export default function Home() {
               AUTONOMOUS AI AGENT
             </div>
           </div>
-
         </div>
-
-        {/* STATUS */}
 
         <div className="header-status">
           <span className="status-indicator" />
           SYSTEM ONLINE
         </div>
-
       </header>
 
       {/* =====================================================
@@ -678,7 +1369,6 @@ export default function Home() {
           ===================================================== */}
 
       <main className="jarvis-main">
-
         <div
           className="jarvis-orb"
           ref={orbRef}
@@ -686,7 +1376,6 @@ export default function Home() {
             "--voice": voiceLevel,
           }}
         >
-
           <div className="orb-mist orb-mist-1" />
           <div className="orb-mist orb-mist-2" />
           <div className="orb-mist orb-mist-3" />
@@ -694,7 +1383,6 @@ export default function Home() {
           <div className="orb-glow" />
 
           <div className="orb-body">
-
             <div className="orb-liquid orb-liquid-1" />
             <div className="orb-liquid orb-liquid-2" />
             <div className="orb-liquid orb-liquid-3" />
@@ -708,19 +1396,22 @@ export default function Home() {
             <div className="orb-core">
               <div className="core-light" />
             </div>
-
           </div>
-
         </div>
 
-        <div className="jarvis-system-text">
+        {/* =================================================
+            SYSTEM TEXT
+            ================================================= */}
 
+        <div className="jarvis-system-text">
           <div className="system-title">
             VEXORITE
           </div>
 
           <div
-            className={`system-message ${agentStatus.toLowerCase()}`}
+            className={`system-message ${
+              agentStatus.toLowerCase()
+            }`}
           >
             {agentStatus === "IDLE" &&
               "READY — GIVE ME A TASK"}
@@ -761,21 +1452,20 @@ export default function Home() {
 
           <div className="voice-level">
             {agentStatus} • VOICE{" "}
-            {Math.round(voiceLevel * 100)}%
+            {Math.round(
+              voiceLevel * 100
+            )}
+            %
           </div>
-
         </div>
-
       </main>
 
       {/* =====================================================
           DEPLOYMENT APPROVAL
-          IMPORTANT: OUTSIDE jarvis-main
           ===================================================== */}
 
       {approvalRequired && (
         <div className="deployment-panel">
-
           <div className="deployment-panel-label">
             WEBSITE VERIFIED
           </div>
@@ -804,7 +1494,9 @@ export default function Home() {
             className="repo-input"
             value={repoUrl}
             onChange={(e) =>
-              setRepoUrl(e.target.value)
+              setRepoUrl(
+                e.target.value
+              )
             }
             placeholder="https://github.com/username/repository"
             disabled={isDeploying}
@@ -812,7 +1504,6 @@ export default function Home() {
           />
 
           <div className="deployment-actions">
-
             <button
               type="button"
               className="deployment-approve"
@@ -835,9 +1526,7 @@ export default function Home() {
             >
               REJECT
             </button>
-
           </div>
-
         </div>
       )}
 
@@ -847,18 +1536,19 @@ export default function Home() {
 
       {deploymentResult?.vercel_url && (
         <div className="deployment-panel deployed-panel">
-
           <div className="deployment-panel-label">
             DEPLOYMENT COMPLETE
           </div>
 
           <div className="deployment-panel-title">
-            🚀 VEXORITE IS LIVE
+            VEXORITE IS LIVE
           </div>
 
           <a
             className="deployment-preview"
-            href={deploymentResult.vercel_url}
+            href={
+              deploymentResult.vercel_url
+            }
             target="_blank"
             rel="noreferrer"
           >
@@ -868,25 +1558,104 @@ export default function Home() {
           {deploymentResult.repo_url && (
             <a
               className="deployment-repo"
-              href={deploymentResult.repo_url}
+              href={
+                deploymentResult.repo_url
+              }
               target="_blank"
               rel="noreferrer"
             >
               VIEW GITHUB REPOSITORY ↗
             </a>
           )}
-
         </div>
       )}
 
       {/* =====================================================
-          COMMAND
+          SOCIAL WINDOW
+          ===================================================== */}
+
+      {socialWindow && (
+        <div className="social-overlay">
+          <div className="social-window">
+            <div className="social-header">
+              <div>
+                <div className="social-title">
+                  {socialWindow ===
+                  "youtube"
+                    ? "YOUTUBE SHORTS"
+                    : "INSTAGRAM REELS"}
+                </div>
+
+                <div className="social-subtitle">
+                  GESTURE CONTROL
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="social-close"
+                onClick={
+                  closeSocialWindow
+                }
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="social-content">
+              <iframe
+                title={
+                  socialWindow ===
+                  "youtube"
+                    ? "YouTube Shorts"
+                    : "Instagram Reels"
+                }
+                src={
+                  socialWindow ===
+                  "youtube"
+                    ? "https://www.youtube.com/shorts/"
+                    : "https://www.instagram.com/reels/"
+                }
+                className="social-frame"
+                allow="autoplay; encrypted-media; fullscreen"
+              />
+
+              <div className="gesture-overlay">
+                <div
+                  className={`gesture-indicator ${
+                    gestureReady
+                      ? "active"
+                      : ""
+                  }`}
+                >
+                  <span />
+                  {gestureStatus}
+                </div>
+
+                <div className="gesture-help">
+                  MOVE HAND UP — NEXT
+                  <span>•</span>
+                  MOVE HAND DOWN — PREVIOUS
+                </div>
+
+                <video
+                  ref={gestureVideoRef}
+                  className="gesture-camera-preview"
+                  muted
+                  playsInline
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
+          COMMAND AREA
           ===================================================== */}
 
       <div className="jarvis-command-area">
-
         <div className="command-box">
-
           <span className="command-prefix">
             VEX &gt;
           </span>
@@ -894,10 +1663,15 @@ export default function Home() {
           <input
             value={command}
             onChange={(e) =>
-              setCommand(e.target.value)
+              setCommand(
+                e.target.value
+              )
             }
             onKeyDown={handleKeyDown}
-            disabled={isRunning || isDeploying}
+            disabled={
+              isRunning ||
+              isDeploying
+            }
             placeholder={
               isListening
                 ? "VEXORITE IS LISTENING..."
@@ -908,11 +1682,19 @@ export default function Home() {
           />
 
           <button
+            type="button"
             className={`voice-button ${
-              isListening ? "listening" : ""
+              isListening
+                ? "listening"
+                : ""
             }`}
-            onClick={toggleListening}
-            disabled={isRunning || isDeploying}
+            onClick={
+              toggleListening
+            }
+            disabled={
+              isRunning ||
+              isDeploying
+            }
             aria-label={
               isListening
                 ? "Stop listening"
@@ -924,10 +1706,13 @@ export default function Home() {
                 : "Talk to Vexorite"
             }
           >
-            {isListening ? "■" : "🎙"}
+            {isListening
+              ? "■"
+              : "🎙"}
           </button>
 
           <button
+            type="button"
             className="command-send"
             onClick={sendCommand}
             disabled={
@@ -940,9 +1725,7 @@ export default function Home() {
               ? "RUNNING"
               : "EXECUTE"}
           </button>
-
         </div>
-
       </div>
 
       {/* =====================================================
@@ -953,6 +1736,18 @@ export default function Home() {
       <Settings />
       <Themes />
 
+      {/* =====================================================
+          PANEL STATE BRIDGE
+          ===================================================== */}
+
+      <div
+        className={`panel-state ${
+          activePanel
+            ? `panel-${activePanel}`
+            : ""
+        }`}
+        aria-hidden="true"
+      />
     </div>
   );
 }

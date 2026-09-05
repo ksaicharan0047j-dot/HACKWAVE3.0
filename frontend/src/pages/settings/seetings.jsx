@@ -1,15 +1,46 @@
 import React, { useEffect, useState } from "react";
 import "./settings.css";
 
+const readSetting = (key, fallback = true) =>
+  localStorage.getItem(key) !== "false"
+    ? fallback
+    : false;
+
 export default function Settings() {
   const [open, setOpen] = useState(false);
-  const [voice, setVoice] = useState(true);
-  const [animations, setAnimations] = useState(true);
-  const [autoVerify, setAutoVerify] = useState(true);
+
+  const [microphone, setMicrophone] = useState(
+    readSetting("vexorite-microphone")
+  );
+
+  const [camera, setCamera] = useState(
+    readSetting("vexorite-camera")
+  );
+
+  const [gestures, setGestures] = useState(
+    readSetting("vexorite-gestures")
+  );
 
   useEffect(() => {
-    const handler = () => setOpen(true);
+    const handler = () => {
+      setMicrophone(
+        localStorage.getItem("vexorite-microphone") !== "false"
+      );
+      setCamera(
+        localStorage.getItem("vexorite-camera") !== "false"
+      );
+      setGestures(
+        localStorage.getItem("vexorite-gestures") !== "false"
+      );
+      setOpen(true);
+    };
 
+    window.addEventListener(
+      "vexorite:settings",
+      handler
+    );
+
+    // Keep compatibility with the current Home event.
     window.addEventListener(
       "jarvis:settings",
       handler
@@ -17,21 +48,57 @@ export default function Settings() {
 
     return () => {
       window.removeEventListener(
+        "vexorite:settings",
+        handler
+      );
+
+      window.removeEventListener(
         "jarvis:settings",
         handler
       );
     };
   }, []);
 
+  const update = (name, value) => {
+    const key = `vexorite-${name}`;
+
+    localStorage.setItem(
+      key,
+      String(value)
+    );
+
+    const next = {
+      microphone:
+        localStorage.getItem("vexorite-microphone") !== "false",
+      camera:
+        localStorage.getItem("vexorite-camera") !== "false",
+      gestures:
+        localStorage.getItem("vexorite-gestures") !== "false",
+    };
+
+    window.dispatchEvent(
+      new CustomEvent("vexorite:device-settings", {
+        detail: next,
+      })
+    );
+  };
+
   if (!open) return null;
 
   return (
-    <div className="settings-overlay">
-      <div className="settings-window">
-
+    <div
+      className="settings-overlay"
+      onClick={() => setOpen(false)}
+    >
+      <div
+        className="settings-window"
+        onClick={(event) => event.stopPropagation()}
+      >
         <button
+          type="button"
           className="settings-close"
           onClick={() => setOpen(false)}
+          aria-label="Close settings"
         >
           ×
         </button>
@@ -41,68 +108,78 @@ export default function Settings() {
         </div>
 
         <div className="settings-subtitle">
-          AGENT CONFIGURATION
+          PRIVACY & DEVICE CONTROL
         </div>
 
         <div className="settings-list">
-
           <label className="setting-row">
             <div>
-              <strong>VOICE INPUT</strong>
+              <strong>MICROPHONE</strong>
               <span>
-                Enable microphone interaction
+                Allow VEXORITE to use voice input
               </span>
             </div>
 
             <input
               type="checkbox"
-              checked={voice}
-              onChange={(e) =>
-                setVoice(e.target.checked)
-              }
+              checked={microphone}
+              onChange={(event) => {
+                const value = event.target.checked;
+                setMicrophone(value);
+                update("microphone", value);
+              }}
             />
           </label>
 
           <label className="setting-row">
             <div>
-              <strong>ORBIT ANIMATION</strong>
+              <strong>CAMERA</strong>
               <span>
-                Enable visual agent animation
+                Allow camera access for hand tracking
               </span>
             </div>
 
             <input
               type="checkbox"
-              checked={animations}
-              onChange={(e) =>
-                setAnimations(e.target.checked)
-              }
+              checked={camera}
+              onChange={(event) => {
+                const value = event.target.checked;
+                setCamera(value);
+
+                if (!value && gestures) {
+                  setGestures(false);
+                  update("gestures", false);
+                }
+
+                update("camera", value);
+              }}
             />
           </label>
 
           <label className="setting-row">
             <div>
-              <strong>AUTO VERIFICATION</strong>
+              <strong>GESTURE CONTROL</strong>
               <span>
-                Verify generated websites
+                Enable hand gestures for social feeds
               </span>
             </div>
 
             <input
               type="checkbox"
-              checked={autoVerify}
-              onChange={(e) =>
-                setAutoVerify(e.target.checked)
-              }
+              checked={gestures}
+              disabled={!camera}
+              onChange={(event) => {
+                const value = event.target.checked;
+                setGestures(value);
+                update("gestures", value);
+              }}
             />
           </label>
-
         </div>
 
         <div className="settings-footer">
-          VEXORITE CORE • ONLINE
+          VEXORITE CORE • DEVICE ACCESS CONTROL
         </div>
-
       </div>
     </div>
   );

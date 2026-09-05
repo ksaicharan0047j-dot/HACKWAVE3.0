@@ -10,7 +10,7 @@ export default function Project() {
     {
       id: 1,  
       number: "01",
-      title: "JARVIS UI",
+      title: "VEXORITE UI",
       description:
         "Futuristic AI assistant interface with animated visual systems.",
       status: "ACTIVE",
@@ -36,7 +36,7 @@ export default function Project() {
       number: "04",
       title: "COMMAND SYSTEM",
       description:
-        "Command interface designed for interacting with JARVIS.",
+        "Command interface designed for interacting with VEXORITE.",
       status: "ACTIVE",
     },
   ];
@@ -52,23 +52,23 @@ export default function Project() {
     };
 
     window.addEventListener(
-      "jarvis:projects",
+      "vexorite:projects",
       openProjects
     );
 
     window.addEventListener(
-      "jarvis:projects:close",
+      "vexorite:projects:close",
       closeProjects
     );
 
     return () => {
       window.removeEventListener(
-        "jarvis:projects",
+        "vexorite:projects",
         openProjects
       );
 
       window.removeEventListener(
-        "jarvis:projects:close",
+        "vexorite:projects:close",
         closeProjects
       );
     };
