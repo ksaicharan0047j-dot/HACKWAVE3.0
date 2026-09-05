@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>My Profile</title>
-
-    <style>
 * {
     margin: 0;
     padding: 0;
@@ -167,52 +154,3 @@ button:active {
         font-size: 16px;
     }
 }
-
-    </style>
-</head>
-
-<body>
-
-    <main class="hero">
-
-        <div class="card">
-
-            <p class="eyebrow">
-                VEXORITE GENERATED
-            </p>
-
-            <h1>
-                My Profile
-            </h1>
-
-            <p class="description">
-                A clean, modern personal profile website showcasing skills, projects, and contact information.
-            </p>
-
-            <button id="actionButton">
-                Explore
-            </button>
-
-            <p id="message"></p>
-
-        </div>
-
-    </main>
-
-    <script>
-const button = document.getElementById("actionButton");
-const message = document.getElementById("message");
-
-if (button && message) {
-    button.addEventListener("click", () => {
-        message.textContent =
-            "VEXORITE says: Website is working.";
-
-        button.textContent = "WORKING ✓";
-    });
-}
-
-    </script>
-
-</body>
-</html>
