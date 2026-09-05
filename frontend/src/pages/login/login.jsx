@@ -1,60 +1,75 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./login.css";
 
 export default function Login({ onLogin }) {
   const pageRef = useRef(null);
+
+  const [step, setStep] = useState("email");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const page = pageRef.current;
 
     if (!page) return;
 
-    // Randomize the universe movement every time the page opens.
+    // Keep the existing universe movement exactly as it was.
     const direction = Math.random() > 0.5 ? 1 : -1;
     const angle = Math.random() * 360;
     const speed = 24 + Math.random() * 16;
 
-    page.style.setProperty(
-      "--universe-direction",
-      direction
-    );
+    page.style.setProperty("--universe-direction", direction);
+    page.style.setProperty("--universe-angle", `${angle}deg`);
+    page.style.setProperty("--universe-speed", `${speed}s`);
 
-    page.style.setProperty(
-      "--universe-angle",
-      `${angle}deg`
-    );
-
-    page.style.setProperty(
-      "--universe-speed",
-      `${speed}s`
-    );
-
-    // Give the orb a slightly different initial rotation
-    // every time the page loads.
+    // Keep the existing orb movement exactly as it was.
     const orbDirection = Math.random() > 0.5 ? 1 : -1;
     const orbSpeed = 18 + Math.random() * 14;
 
-    page.style.setProperty(
-      "--orb-direction",
-      orbDirection
-    );
-
-    page.style.setProperty(
-      "--orb-speed",
-      `${orbSpeed}s`
-    );
+    page.style.setProperty("--orb-direction", orbDirection);
+    page.style.setProperty("--orb-speed", `${orbSpeed}s`);
   }, []);
 
-  const handleSubmit = (event) => {
+  const handleEmailSubmit = (event) => {
     event.preventDefault();
-    onLogin?.();
+
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      setError("Enter your email to continue.");
+      return;
+    }
+
+    setError("");
+    setStep("verify");
+  };
+
+  const handleVerification = (event) => {
+    event.preventDefault();
+
+    if (code.trim() !== "1234") {
+      setError("Invalid verification code.");
+      return;
+    }
+
+    setError("");
+
+    // Remember the authenticated session locally.
+    localStorage.setItem("vexorite_authenticated", "true");
+    localStorage.setItem("vexorite_email", email.trim());
+
+    onLogin?.(email.trim());
+  };
+
+  const goBack = () => {
+    setStep("email");
+    setCode("");
+    setError("");
   };
 
   return (
-    <main
-      ref={pageRef}
-      className="login-page"
-    >
+    <main ref={pageRef} className="login-page">
       {/* =====================================================
           COSMIC BACKGROUND
       ====================================================== */}
@@ -83,14 +98,9 @@ export default function Login({ onLogin }) {
 
         <div className="gas-giant-container">
 
-          {/* Outer atmospheric glow */}
           <div className="planet-atmosphere atmosphere-one" />
           <div className="planet-atmosphere atmosphere-two" />
           <div className="planet-atmosphere atmosphere-three" />
-
-          {/* =================================================
-              DUST BEING PULLED INWARD
-          ================================================== */}
 
           <div className="dust-stream dust-stream-one">
             <span />
@@ -123,10 +133,6 @@ export default function Login({ onLogin }) {
             <span />
           </div>
 
-          {/* =================================================
-              ACTUAL GAS / SMOKE BODY
-          ================================================== */}
-
           <div className="gas-giant">
 
             <div className="gas-layer layer-one" />
@@ -136,21 +142,15 @@ export default function Login({ onLogin }) {
             <div className="gas-layer layer-five" />
             <div className="gas-layer layer-six" />
 
-            {/* Internal turbulent storms */}
             <div className="gas-storm storm-one" />
             <div className="gas-storm storm-two" />
             <div className="gas-storm storm-three" />
 
-            {/* Light escaping from the interior */}
             <div className="gas-highlight" />
 
             <div className="gas-core" />
 
           </div>
-
-          {/* =================================================
-              SMOKE / GAS WISPS
-          ================================================== */}
 
           <div className="gas-wisp wisp-one" />
           <div className="gas-wisp wisp-two" />
@@ -164,7 +164,7 @@ export default function Login({ onLogin }) {
         ==================================================== */}
 
         <div className="login-brand">
-          <h1>TOMMY</h1>
+          <h1>VEXORITE</h1>
 
           <p>
             Your autonomous AI workspace
@@ -172,49 +172,115 @@ export default function Login({ onLogin }) {
         </div>
 
         {/* ===================================================
-            LOGIN FORM
+            EMAIL STEP
         ==================================================== */}
 
-        <form
-          className="login-form"
-          onSubmit={handleSubmit}
-        >
-
-          <label>
-            <span>Email</span>
-
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              autoComplete="email"
-            />
-          </label>
-
-          <label>
-            <span>Password</span>
-
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
-            />
-          </label>
-
-          <button
-            type="submit"
-            className="enter-button"
+        {step === "email" && (
+          <form
+            className="login-form"
+            onSubmit={handleEmailSubmit}
           >
-            <span className="button-energy" />
-            <span className="button-glow" />
+            <label>
+              <span>Email</span>
 
-            <span className="button-text">
-              Enter TOMMY
-            </span>
-          </button>
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setError("");
+                }}
+                placeholder="Enter your email"
+                autoComplete="email"
+                autoFocus
+              />
+            </label>
 
-        </form>
+            {error && (
+              <p className="login-error">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="enter-button"
+            >
+              <span className="button-energy" />
+              <span className="button-glow" />
+
+              <span className="button-text">
+                Continue to VEXORITE
+              </span>
+            </button>
+          </form>
+        )}
+
+        {/* ===================================================
+            VERIFICATION STEP
+        ==================================================== */}
+
+        {step === "verify" && (
+          <form
+            className="login-form"
+            onSubmit={handleVerification}
+          >
+            <label>
+              <span>Verification code</span>
+
+              <input
+                type="text"
+                name="verificationCode"
+                value={code}
+                onChange={(event) => {
+                  const value = event.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 4);
+
+                  setCode(value);
+                  setError("");
+                }}
+                placeholder="Enter 4-digit code"
+                inputMode="numeric"
+                maxLength={4}
+                autoComplete="one-time-code"
+                autoFocus
+              />
+            </label>
+
+            <p className="verification-email">
+              Verification sent to{" "}
+              <strong>{email}</strong>
+            </p>
+
+            {error && (
+              <p className="login-error">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="enter-button"
+            >
+              <span className="button-energy" />
+              <span className="button-glow" />
+
+              <span className="button-text">
+                Verify & Enter VEXORITE
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="back-button"
+              onClick={goBack}
+            >
+              ← Change email
+            </button>
+          </form>
+        )}
 
         {/* ===================================================
             FOOTER

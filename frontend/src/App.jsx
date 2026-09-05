@@ -5,32 +5,24 @@ import Home from "./pages/home/home";
 import Projects from "./pages/projects/projects";
 
 function App() {
-  const [page, setPage] = useState("login");
+  // Keep the user logged in after refresh.
+  const [page, setPage] = useState(() => {
+    const authenticated = localStorage.getItem("vexorite_authenticated");
 
-  const [selectedProject, setSelectedProject] =
-    useState(null);
+    return authenticated === "true" ? "home" : "login";
+  });
+
+  const [selectedProject, setSelectedProject] = useState(null);
 
   /*
    * ---------------------------------------------------------
    * NAVIGATION EVENTS
    * ---------------------------------------------------------
-   *
-   * Home can request navigation using:
-   *
-   * window.dispatchEvent(
-   *   new CustomEvent("jarvis:navigate", {
-   *     detail: { page: "projects" }
-   *   })
-   * );
-   *
-   * We listen globally here so every part of the UI
-   * can communicate with the main application shell.
    */
 
   useEffect(() => {
     const handleNavigation = (event) => {
-      const nextPage =
-        event.detail?.page;
+      const nextPage = event.detail?.page;
 
       if (!nextPage) {
         return;
@@ -49,7 +41,7 @@ function App() {
     );
 
     /*
-     * Backwards compatibility with the existing Home.jsx
+     * Backwards compatibility with existing Home.jsx
      */
     window.addEventListener(
       "jarvis:projects",
@@ -78,7 +70,21 @@ function App() {
   if (page === "login") {
     return (
       <Login
-        onLogin={() => {
+        onLogin={(email) => {
+          // Login.jsx already stores these values,
+          // but keeping this here makes App independently safe.
+          localStorage.setItem(
+            "vexorite_authenticated",
+            "true"
+          );
+
+          if (email) {
+            localStorage.setItem(
+              "vexorite_email",
+              email
+            );
+          }
+
           setPage("home");
         }}
       />

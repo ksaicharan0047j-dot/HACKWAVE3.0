@@ -2472,3 +2472,36 @@ input {
       1 !important;
   }
 }
+.login-error {
+  margin: -7px 0 0;
+  color: #ff5f91;
+  font-size: 12px;
+  text-align: center;
+}
+
+.verification-email {
+  margin: -7px 0 0;
+  color: rgba(229, 235, 255, 0.38);
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.verification-email strong {
+  color: rgba(0, 229, 255, 0.7);
+  font-weight: 500;
+}
+
+.back-button {
+  border: none;
+  background: transparent;
+  color: rgba(229, 235, 255, 0.38);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: rgba(0, 229, 255, 0.85);
+}
