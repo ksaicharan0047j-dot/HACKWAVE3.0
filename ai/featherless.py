@@ -12,7 +12,8 @@ if not API_KEY:
 
 client = OpenAI(
     api_key=API_KEY,
-    base_url="https://api.featherless.ai/v1"
+    base_url="https://api.featherless.ai/v1",
+    timeout=60.0,
 )
 
 MODEL = "Qwen/Qwen3.8-27B"
@@ -24,9 +25,9 @@ def ask_featherless(prompt: str) -> str:
         messages=[
             {
                 "role": "user",
-                "content": prompt
+                "content": prompt,
             }
-        ]
+        ],
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content  

@@ -1,0 +1,439 @@
+[
+    {
+        "name": "build_me_a_simple_portfolio_call_workflow",
+        "trigger": "Build me a simple portfolio website. Call it Test Portfolio and describe it as a modern personal portfolio website.",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "test-portfolio",
+                    "title": "Test Portfolio",
+                    "description": "A modern personal portfolio website"
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_a_profilo_website_for_me_workflow",
+        "trigger": "make a profilo website for me",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "profile-website",
+                    "title": "My Profile",
+                    "description": "A clean personal profile website with bio, skills, projects, and contact sections."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "build_me_a_simple_profilo_website_workflow",
+        "trigger": "build me a simple profilo website name it \"konda\" and describe it as a modern personal portfolio website.",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "konda",
+                    "title": "Konda \u2014 Personal Portfolio",
+                    "description": "A modern personal portfolio website."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_a_simple_profilo_page_workflow",
+        "trigger": "make me a simple profilo page name it 'the#' and describe it as a modern personal portfolio website.",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "thehash",
+                    "title": "the#",
+                    "description": "A modern personal portfolio website."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "create_a_simple_website_called_testsite_workflow",
+        "trigger": "Create a simple website called TestSite",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "testsite",
+                    "title": "TestSite",
+                    "description": "A simple test website."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "build_me_a_modern_ai_developer_workflow",
+        "trigger": "Build me a modern AI developer portfolio website called VEXORITE LABS. Create it as a complete working website with a dark futuristic interface, animated gradient background, glassmorphism cards, responsive layout for desktop and mobile, and smooth hover animations. Pages/sections required: 1. Hero section with the title VEXORITE LABS and subtitle AI that turns ideas into working software. 2. About section explaining that VEXORITE is an AI-powered desktop development agent. 3. Projects section with 3 project cards: VEXORITE, GhostnSweeper, and THE_HASHTAG. 4. Skills section showing AI, Python, FastAPI, React, GitHub, and Vercel. 5. Contact section with a working contact form containing name, email, and message fields. 6. A navigation bar that smoothly scrolls to each section. 7. Add a functional dark/light theme toggle using JavaScript. 8. Add subtle animations and interactive hover effects, but do not use external image assets. Technical requirements: Use only HTML, CSS, and vanilla JavaScript. Keep the project self-contained with separate index.html, style.css, and script.js files. Make sure there are no broken links, missing files, or console errors. After creating the website, start the local development server, verify that it responds successfully with HTTP 200, and then expose the verified website through LocalTunnel. Do not push anything to GitHub or deploy to Vercel yet. Stop after giving me the LocalTunnel preview URL and wait for my approval. Here is the existing GitHub repository for this project: https://github.com/ksaicharan0047j-dot/HACKWAVE3.0. Important: Do not create a GitHub repository. The repository already exists. Do not push or deploy anything until I explicitly approve it.",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "vexorite-labs",
+                    "title": "VEXORITE LABS",
+                    "description": "AI that turns ideas into working software \u2014 VEXORITE LABS portfolio"
+                }
+            }
+        ]
+    },
+    {
+        "name": "build_a_modern_ai_developer_portfolio_workflow",
+        "trigger": "Build a modern AI developer portfolio website called VEXORITE LABS.\n\nCreate a complete, polished, working website with:\n\nDESIGN:\n- Dark futuristic developer/AI aesthetic\n- Black/deep dark background\n- Animated gradient background\n- Glassmorphism cards and panels\n- Glowing cyan/purple accent effects\n- Smooth hover animations\n- Responsive desktop and mobile layout\n- Clean modern typography\n- Professional hackathon-demo quality UI\n- No external image assets\n\nSECTIONS:\n\n1. HERO\n- Large heading: \"VEXORITE LABS\"\n- Subtitle: \"AI that turns ideas into working software.\"\n- Short description explaining that VEXORITE is an AI-powered desktop development agent.\n- Add prominent \"Build with VEXORITE\" button.\n- Add a secondary \"Explore Projects\" button.\n\n2. ABOUT\nExplain VEXORITE as an AI desktop development agent that can:\n- Understand natural-language commands\n- Create and modify files\n- Run terminal commands\n- Build websites\n- Start local development servers\n- Verify websites automatically\n- Create reusable workflows\n- Push approved work to GitHub\n- Deploy approved projects to Vercel\n\n3. PROJECTS\nCreate attractive project cards for:\n- VEXORITE \u2014 AI-powered desktop development agent\n- GhostnSweeper \u2014 spooky interactive web game\n- THE_HASHTAG \u2014 student events and opportunities platform\n\nEach card should have:\n- Project name\n- Short description\n- Technology tags\n- Hover animation\n- \"View Project\" style button\n\n4. HOW IT WORKS\nShow a visual workflow:\n\nNatural Language Command\n\u2192 AI Planning\n\u2192 Tool Execution\n\u2192 Website Verification\n\u2192 LocalTunnel Preview\n\u2192 User Approval\n\u2192 GitHub\n\u2192 Vercel\n\nMake this section visually impressive.\n\n5. CAPABILITIES\nShow cards for:\n- AI Planning\n- File System Control\n- Terminal Execution\n- Website Generation\n- Website Verification\n- GitHub Integration\n- Vercel Deployment\n- Workflow Memory\n\n6. TECH STACK\nDisplay:\n- Python\n- FastAPI\n- React\n- JavaScript\n- Featherless AI\n- GitHub\n- Vercel\n- LocalTunnel\n\n7. CONTACT\nCreate a working contact-style section with:\n- Name input\n- Email input\n- Message textarea\n- Submit button\n\nThe form does not need a real backend, but JavaScript should prevent the default submission and display a success message.\n\n8. NAVIGATION\nCreate a fixed navigation bar with:\n- Home\n- About\n- Projects\n- How It Works\n- Contact\n\nNavigation should smoothly scroll to sections.\n\n9. DARK/LIGHT MODE\nAdd a functional dark/light mode toggle using vanilla JavaScript.\nThe entire website should visibly change between dark and light themes.\n\n10. INTERACTIONS\nAdd:\n- Smooth scrolling\n- Button hover effects\n- Card hover effects\n- Scroll reveal animations\n- Animated background elements\n- Mobile navigation\n- Interactive theme toggle\n- Contact form success message\n\nTECHNICAL REQUIREMENTS:\n- Use ONLY HTML, CSS and vanilla JavaScript.\n- Create exactly these files:\n  index.html\n  style.css\n  script.js\n- Keep HTML, CSS and JavaScript separated.\n- No React.\n- No external image assets.\n- No external backend.\n- Make everything responsive.\n- Make sure the website actually works when opened through a local HTTP server.\n- Do not create a GitHub repository.\n\nIMPORTANT EXECUTION WORKFLOW:\n\nAfter creating the website:\n\n1. Start the local website server.\n2. Use the exact port used by the server.\n3. Verify the website using check_url.\n4. Confirm that the website returns HTTP 200.\n5. Start LocalTunnel using the exact same port.\n6. Return the public LocalTunnel URL.\n7. STOP and wait for my explicit approval.\n\nEXISTING GITHUB REPOSITORY:\nhttps://github.com/ksaicharan0047j-dot/HACKWAVE3.0\n\nCRITICAL RULES:\n- The GitHub repository already exists.\n- NEVER create a GitHub repository.\n- Do NOT run git_push before approval.\n- Do NOT deploy to Vercel before approval.\n- Do NOT commit/push/deploy anything before approval.\n- First show me the verified LocalTunnel preview URL.\n- STOP and wait for my explicit approval.\n\nAfter I explicitly approve:\n- Push the project to the existing GitHub repository.\n- Then deploy the approved project to Vercel.\n- Return the GitHub URL and Vercel deployment URL.",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "vexorite-labs",
+                    "title": "VEXORITE LABS",
+                    "description": "AI that turns ideas into working software. VEXORITE LABS \u2014 a futuristic AI developer portfolio showcasing an AI-powered desktop development agent."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_a_profilo_page_workflow",
+        "trigger": "Make me a profilo page",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "profilo-page",
+                    "title": "Il Mio Profilo",
+                    "description": "A clean personal profile page with bio, skills, and contact section."
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_profile_of_things_that_workflow",
+        "trigger": "Make me profile of things that actually has some stuff and controls",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "profile-site",
+                    "title": "Alex Carter \u2014 Personal Profile",
+                    "description": "A personal profile page with real content, stats, projects, and interactive controls like theme switching, tabs, and a contact form."
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_a_website_workflow",
+        "trigger": "Make me a website",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "my-website",
+                    "title": "My Website",
+                    "description": "A clean, modern, responsive landing page website."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_a_website_of_my_workflow",
+        "trigger": "Make me a website of my profile",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "my-profile",
+                    "title": "My Profile",
+                    "description": "A personal profile website showcasing skills, experience, and contact information."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "build_me_a_website_it_should_workflow",
+        "trigger": "build me a website it should have many functions to interact and it should be a profile page",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "interactive-profile",
+                    "title": "Alex Carter \u2014 Interactive Profile",
+                    "description": "A highly interactive personal profile page with themes, animated stats, a particle background, typewriter effects, a terminal, and more."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_profile_website_workflow",
+        "trigger": "Make me profile website",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "profile-website",
+                    "title": "Personal Profile",
+                    "description": "A clean, modern personal profile website showcasing skills, projects, and contact information."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_a_profile_website_workflow",
+        "trigger": "Make a profile website",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "profile-website",
+                    "title": "Alex Doe \u2014 Profile",
+                    "description": "A clean, modern personal profile website with bio, skills, experience, and contact sections."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_me_a_website_with_interactive_workflow",
+        "trigger": "Make me a website with interactive controls",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "interactive-controls",
+                    "title": "Interactive Controls Playground",
+                    "description": "A modern playground showcasing interactive UI controls: sliders, toggles, color pickers, buttons, and live-updating outputs."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_a_working_website_with_a_workflow",
+        "trigger": "Make a working website with a bunch of controls their functionality",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "control-center",
+                    "title": "Control Center",
+                    "description": "A fully interactive control panel with working toggles, sliders, buttons, color pickers, timers, and more."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    },
+    {
+        "name": "make_my_website_with_multiple_functional_workflow",
+        "trigger": "Make my website with multiple functional items",
+        "type": "executable_workflow",
+        "steps": [
+            {
+                "tool": "create_website",
+                "arguments": {
+                    "project_name": "multi-tool-dashboard",
+                    "title": "Multi-Tool Dashboard",
+                    "description": "A functional web dashboard with a to-do list, calculator, stopwatch, notes, color palette generator, and unit converter."
+                }
+            },
+            {
+                "tool": "start_process",
+                "arguments": {
+                    "command": "python -m http.server {{port}}",
+                    "working_directory": "projects/{{project_name}}"
+                }
+            },
+            {
+                "tool": "check_url",
+                "arguments": {
+                    "url": "http://localhost:{{port}}"
+                }
+            }
+        ]
+    }
+]
